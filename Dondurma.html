@@ -1,0 +1,1423 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>DONDURMA / Signal Reader v1.0</title>
+<template id="__bundler_thumbnail" data-bg-color="#07090a">
+  <svg viewBox="0 0 1200 800" xmlns="http://www.w3.org/2000/svg">
+    <rect width="1200" height="800" fill="#07090a"/>
+    <g fill="none" stroke="#8eecd0" stroke-width="2" opacity="0.35">
+      <circle cx="600" cy="400" r="80"/>
+      <circle cx="600" cy="400" r="160"/>
+      <circle cx="600" cy="400" r="240"/>
+    </g>
+    <g fill="#8eecd0">
+      <circle cx="600" cy="400" r="14"/>
+      <rect x="596" y="280" width="8" height="40"/>
+      <rect x="596" y="480" width="8" height="40"/>
+      <rect x="480" y="396" width="40" height="8"/>
+      <rect x="680" y="396" width="40" height="8"/>
+    </g>
+    <text x="600" y="640" text-anchor="middle" fill="#e8efe9" font-family="serif" font-style="italic" font-size="64">Dondurma</text>
+    <text x="600" y="690" text-anchor="middle" fill="#56635f" font-family="monospace" font-size="18" letter-spacing="6">SIGNAL READER v1.0</text>
+  </svg>
+</template>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=JetBrains+Mono:wght@300;400;500;600&family=Space+Grotesk:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --bg:        #07090a;
+    --bg-2:      #0c1011;
+    --surface:   #11171a;
+    --surface-2: #161e22;
+    --line:      #1f2a2e;
+    --line-2:    #2a3a40;
+    --ink:       #e8efe9;
+    --ink-dim:   #97a3a0;
+    --ink-faint: #56635f;
+    --mint:      #8eecd0;
+    --mint-deep: #46b496;
+    --coral:     #ff9b7a;
+    --amber:     #ffd27a;
+    --pink:      #ff7ab0;
+  }
+  *{box-sizing:border-box;margin:0;padding:0}
+  html,body{background:var(--bg);color:var(--ink);font-family:'Space Grotesk',sans-serif;-webkit-font-smoothing:antialiased;text-rendering:optimizeLegibility;
+    transition:background-color .55s ease, color .35s ease;
+  }
+  html.theming *{
+    transition: background-color .5s ease, color .35s ease, border-color .5s ease, box-shadow .5s ease, fill .35s ease, stroke .35s ease !important;
+  }
+  body{
+    overflow-x:hidden;
+    --mx: 50%;
+    --my: 30%;
+    background:
+      radial-gradient(800px 500px at var(--mx) var(--my), color-mix(in oklab, var(--mint) 14%, transparent), transparent 60%),
+      radial-gradient(1200px 600px at 80% -10%, color-mix(in oklab, var(--mint) 6%, transparent), transparent 60%),
+      radial-gradient(900px 500px at 5% 110%, color-mix(in oklab, var(--coral) 6%, transparent), transparent 60%),
+      var(--bg);
+  }
+  .mono{font-family:'JetBrains Mono',monospace;font-feature-settings:"ss01","ss02"}
+  .serif{font-family:'Instrument Serif',serif;font-style:italic;letter-spacing:-.01em}
+  .uc{text-transform:uppercase;letter-spacing:.18em}
+  a{color:inherit;text-decoration:none}
+  img{display:block;max-width:100%}
+
+  /* ---------- Page chrome ---------- */
+  .grain{position:fixed;inset:0;pointer-events:none;z-index:60;opacity:.35;mix-blend-mode:overlay;
+    background-image:url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='200' height='200'><filter id='n'><feTurbulence baseFrequency='0.9' numOctaves='2' stitchTiles='stitch'/><feColorMatrix values='0 0 0 0 0  0 0 0 0 0  0 0 0 0 0  0 0 0 .5 0'/></filter><rect width='100%' height='100%' filter='url(%23n)'/></svg>")}
+  .crosshair{position:fixed;inset:0;pointer-events:none;z-index:50;
+    background:
+      linear-gradient(90deg, transparent calc(50% - .5px), rgba(142,236,208,.05) calc(50% - .5px) calc(50% + .5px), transparent calc(50% + .5px)),
+      linear-gradient(0deg, transparent calc(50% - .5px), rgba(142,236,208,.04) calc(50% - .5px) calc(50% + .5px), transparent calc(50% + .5px));
+  }
+
+  /* ---------- Top status bar ---------- */
+  .top{
+    position:sticky;top:0;z-index:40;
+    backdrop-filter:blur(14px);
+    background:linear-gradient(180deg, rgba(7,9,10,.92), rgba(7,9,10,.6));
+    border-bottom:1px solid var(--line);
+  }
+  .top-inner{
+    max-width:1480px;margin:0 auto;padding:10px 28px;
+    display:grid;grid-template-columns:1fr auto 1fr;align-items:center;gap:24px;
+    font-size:11px;
+  }
+  .top .left, .top .right{display:flex;align-items:center;gap:18px;color:var(--ink-dim)}
+  .top .right{justify-content:flex-end}
+  .top .center{display:flex;align-items:center;gap:10px}
+  .pulse{width:7px;height:7px;border-radius:50%;background:var(--mint);box-shadow:0 0 0 0 rgba(142,236,208,.6);animation:pulse 1.6s infinite}
+  @keyframes pulse{0%{box-shadow:0 0 0 0 rgba(142,236,208,.55)}70%{box-shadow:0 0 0 10px rgba(142,236,208,0)}100%{box-shadow:0 0 0 0 rgba(142,236,208,0)}}
+  .badge{display:inline-flex;align-items:center;gap:8px;padding:5px 9px;border:1px solid var(--line-2);border-radius:2px;font-size:10px;color:var(--ink)}
+  .top a:hover{color:var(--mint)}
+
+  /* ---------- Layout ---------- */
+  section{position:relative;border-bottom:1px solid var(--line)}
+  .wrap{max-width:1480px;margin:0 auto;padding:0 28px}
+  .section-tag{
+    display:flex;align-items:center;gap:14px;
+    font-size:11px;color:var(--ink-faint);padding:18px 0;border-bottom:1px dashed var(--line);
+  }
+  .section-tag .num{color:var(--mint);font-weight:500}
+  .section-tag .ttl{color:var(--ink-dim)}
+  .section-tag .spacer{flex:1;height:1px;background:linear-gradient(90deg,var(--line) 0,var(--line) 40%,transparent 100%)}
+  .section-tag .meta{color:var(--ink-faint)}
+
+  /* ---------- HERO ---------- */
+  .hero{padding:0 0 64px 0;position:relative;overflow:hidden}
+  .hero::before{
+    content:"";position:absolute;inset:0;
+    background-image:
+      radial-gradient(circle, rgba(142,236,208,.10) 1px, transparent 1.4px);
+    background-size:38px 38px;background-position:0 0;
+    mask-image:radial-gradient(ellipse at 70% 30%, black 0%, transparent 65%);
+    -webkit-mask-image:radial-gradient(ellipse at 70% 30%, black 0%, transparent 65%);
+    opacity:.5;pointer-events:none;
+  }
+  .hero-grid{
+    display:grid;grid-template-columns:1.25fr .9fr;gap:60px;padding:60px 0 0;align-items:start;
+  }
+  .eyebrow{font-size:12px;color:var(--mint);display:flex;align-items:center;gap:12px;margin-bottom:36px}
+  .eyebrow .bar{width:34px;height:1px;background:var(--mint)}
+  .eyebrow .dim{color:var(--ink-faint)}
+  h1.title{
+    font-family:'Instrument Serif',serif;font-style:italic;font-weight:400;
+    font-size:clamp(72px, 13vw, 220px);line-height:.86;letter-spacing:-.035em;
+    color:var(--ink);
+  }
+  h1.title .stroke{
+    -webkit-text-stroke:1.2px var(--ink);color:transparent;font-style:italic;
+  }
+  h1.title .mint{color:var(--mint)}
+  .sub{
+    margin-top:36px;max-width:560px;
+    font-size:18px;line-height:1.5;color:var(--ink-dim);
+    text-wrap:pretty;
+  }
+  .sub b{color:var(--ink);font-weight:500}
+  .cta-row{margin-top:42px;display:flex;flex-wrap:wrap;gap:14px;align-items:center}
+  .btn{
+    display:inline-flex;align-items:center;gap:14px;padding:14px 22px;
+    border:1px solid var(--line-2);border-radius:2px;
+    font-family:'JetBrains Mono',monospace;font-size:12px;letter-spacing:.12em;text-transform:uppercase;
+    background:var(--surface);color:var(--ink);
+    transition:transform .2s, border-color .2s, background .2s;
+  }
+  .btn:hover{transform:translate(-1px,-1px);border-color:var(--mint);background:var(--surface-2)}
+  .btn .ar{display:inline-block;transition:transform .2s}
+  .btn:hover .ar{transform:translateX(3px)}
+  .btn-primary{background:var(--mint);color:#062018;border-color:var(--mint)}
+  .btn-primary:hover{background:#a8f4dd;border-color:#a8f4dd}
+
+  /* Quick stats under hero text */
+  .quick{
+    margin-top:54px;display:grid;grid-template-columns:repeat(4,1fr);gap:0;
+    border-top:1px solid var(--line);
+  }
+  .quick > div{padding:18px 16px 4px 0;border-right:1px solid var(--line)}
+  .quick > div:last-child{border-right:0}
+  .quick .k{font-family:'JetBrains Mono',monospace;font-size:10px;color:var(--ink-faint);text-transform:uppercase;letter-spacing:.14em}
+  .quick .v{font-family:'Instrument Serif',serif;font-style:italic;font-size:38px;line-height:1;color:var(--ink);margin-top:6px}
+  .quick .vm{font-family:'JetBrains Mono',monospace;font-size:11px;color:var(--mint);margin-top:8px}
+
+  /* Phone */
+  .phone-col{position:relative}
+  .phone{
+    position:relative;width:300px;margin:0 auto;
+    border-radius:46px;padding:10px;
+    background:linear-gradient(180deg,#1c2629,#0a1012);
+    box-shadow:
+      0 40px 80px -20px rgba(0,0,0,.6),
+      0 0 0 1px #1c2629,
+      inset 0 0 0 1px #2a373c;
+  }
+  .phone .screen{
+    border-radius:36px;overflow:hidden;background:#000;position:relative;aspect-ratio:1185/2532;
+  }
+  .phone img{width:100%;height:100%;object-fit:cover;display:block}
+  .phone-tag{
+    position:absolute;left:-30px;top:30px;
+    writing-mode:vertical-rl;transform:rotate(180deg);
+    font-family:'JetBrains Mono',monospace;font-size:10px;color:var(--ink-faint);letter-spacing:.2em;
+  }
+  .phone-meta{
+    margin-top:24px;display:flex;justify-content:space-between;align-items:center;
+    font-family:'JetBrains Mono',monospace;font-size:11px;color:var(--ink-dim);
+  }
+  .phone-meta .dot{width:6px;height:6px;border-radius:50%;background:var(--mint);display:inline-block;margin-right:8px;vertical-align:middle}
+
+  /* Floating annotation labels on phone */
+  .anno{position:absolute;font-family:'JetBrains Mono',monospace;font-size:10px;color:var(--ink-dim);display:flex;align-items:center;gap:8px;pointer-events:none}
+  .anno::before{content:"";width:24px;height:1px;background:var(--mint)}
+  .anno.left::before{order:2}
+  .anno.left{flex-direction:row-reverse}
+  .anno .v{color:var(--mint)}
+  .a1{top:80px;left:-220px}
+  .a2{top:230px;right:-220px}
+  .a3{top:430px;left:-220px}
+  .a4{bottom:80px;right:-220px}
+
+  /* ---------- Live ticker ---------- */
+  .ticker{
+    border-top:1px solid var(--line);border-bottom:1px solid var(--line);
+    overflow:hidden;white-space:nowrap;background:var(--bg-2);
+  }
+  .ticker-track{display:inline-flex;gap:60px;padding:14px 0;animation:scroll 60s linear infinite}
+  @keyframes scroll{from{transform:translateX(0)}to{transform:translateX(-50%)}}
+  .ticker .item{display:inline-flex;align-items:center;gap:14px;font-family:'JetBrains Mono',monospace;font-size:12px;color:var(--ink-dim)}
+  .ticker .item .src{color:var(--mint)}
+  .ticker .item .sep{color:var(--ink-faint)}
+  .ticker .item .glyph{color:var(--coral)}
+
+  /* ---------- Manifesto ---------- */
+  .manifesto{padding:80px 0 100px}
+  .manifesto-grid{display:grid;grid-template-columns:.6fr 1.4fr;gap:60px;align-items:start}
+  .manifesto h2{
+    font-family:'Instrument Serif',serif;font-style:italic;font-weight:400;
+    font-size:clamp(46px,5.5vw,84px);line-height:.95;letter-spacing:-.02em;color:var(--ink);
+  }
+  .manifesto h2 .strike{text-decoration:line-through;text-decoration-thickness:2px;color:var(--ink-faint);text-decoration-color:var(--coral)}
+  .manifesto h2 .mint{color:var(--mint)}
+  .manifesto .left p{font-size:13px;color:var(--ink-dim);max-width:340px;line-height:1.6;margin-top:18px}
+  .manifesto .left .stamp{
+    margin-top:32px;display:inline-block;padding:8px 12px;border:1px solid var(--coral);color:var(--coral);
+    font-family:'JetBrains Mono',monospace;font-size:11px;letter-spacing:.16em;text-transform:uppercase;
+    transform:rotate(-3deg);
+  }
+
+  /* ---------- Features (manifest table) ---------- */
+  .manifest{padding:60px 0 100px}
+  .manifest-head{
+    display:grid;grid-template-columns:80px 1fr 1.3fr 110px;gap:24px;
+    padding:14px 0;border-bottom:1px solid var(--line);
+    font-family:'JetBrains Mono',monospace;font-size:10px;color:var(--ink-faint);text-transform:uppercase;letter-spacing:.16em
+  }
+  .feat{
+    display:grid;grid-template-columns:80px 1fr 1.3fr 110px;gap:24px;align-items:start;
+    padding:34px 0;border-bottom:1px solid var(--line);
+    transition:background .3s;
+    position:relative;
+  }
+  .feat:hover{background:linear-gradient(90deg, rgba(142,236,208,.04), transparent 70%)}
+  .feat .id{font-family:'JetBrains Mono',monospace;color:var(--mint);font-size:12px;padding-top:6px}
+  .feat .name{
+    font-family:'Instrument Serif',serif;font-style:italic;font-weight:400;
+    font-size:34px;line-height:1.05;color:var(--ink);letter-spacing:-.01em;
+  }
+  .feat .desc{color:var(--ink-dim);font-size:14px;line-height:1.55;max-width:520px;text-wrap:pretty}
+  .feat .tags{display:flex;flex-wrap:wrap;gap:6px;justify-content:flex-end;padding-top:8px}
+  .feat .tag{
+    font-family:'JetBrains Mono',monospace;font-size:10px;color:var(--ink-dim);
+    padding:3px 8px;border:1px solid var(--line-2);border-radius:999px;letter-spacing:.06em
+  }
+  .feat .tag.mint{color:var(--mint);border-color:rgba(142,236,208,.35)}
+  .feat .tag.coral{color:var(--coral);border-color:rgba(255,155,122,.35)}
+
+  /* ---------- Spotlight 3-up ---------- */
+  .spotlight{padding:80px 0 120px;background:linear-gradient(180deg, transparent, rgba(142,236,208,.025))}
+  .spot-head{display:flex;justify-content:space-between;align-items:end;margin-bottom:48px;gap:40px;flex-wrap:wrap}
+  .spot-head h3{
+    font-family:'Instrument Serif',serif;font-style:italic;font-weight:400;
+    font-size:clamp(40px,4.5vw,68px);line-height:1;letter-spacing:-.02em;max-width:680px;
+  }
+  .spot-head p{color:var(--ink-dim);max-width:380px;font-size:14px;line-height:1.55}
+  .spot-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:28px;align-items:end}
+  .spot{position:relative}
+  .spot .frame{
+    aspect-ratio:1185/2532;border-radius:34px;overflow:hidden;
+    background:#000;border:1px solid var(--line-2);
+    box-shadow:0 30px 70px -30px rgba(0,0,0,.7);
+    position:relative;
+  }
+  .spot .frame img{width:100%;height:100%;object-fit:cover}
+  .spot:nth-child(2){transform:translateY(-30px)}
+  .spot:nth-child(2) .frame{border-color:rgba(142,236,208,.4);box-shadow:0 30px 70px -25px rgba(142,236,208,.18), 0 0 0 1px rgba(142,236,208,.2)}
+  .spot-cap{display:flex;justify-content:space-between;align-items:center;margin-top:16px;font-family:'JetBrains Mono',monospace;font-size:11px;color:var(--ink-dim)}
+  .spot-cap .ch{color:var(--mint)}
+  .spot-cap .nm{color:var(--ink);font-family:'Instrument Serif',serif;font-style:italic;font-size:22px;letter-spacing:-.01em}
+
+  /* ---------- Themes ---------- */
+  .themes{padding:80px 0 100px}
+  .themes-head{display:grid;grid-template-columns:1fr 1fr;gap:60px;margin-bottom:54px;align-items:end}
+  .themes-head h3{
+    font-family:'Instrument Serif',serif;font-style:italic;font-weight:400;
+    font-size:clamp(40px,5vw,76px);line-height:.95;letter-spacing:-.02em;
+  }
+  .themes-head h3 .mint{color:var(--mint)}
+  .themes-head p{color:var(--ink-dim);font-size:15px;line-height:1.6;max-width:460px}
+  .theme-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:18px}
+  .theme{
+    border:1px solid var(--line);border-radius:6px;
+    background:var(--surface);
+    padding:18px;
+    transition:transform .3s, border-color .3s;
+    position:relative;overflow:hidden;
+  }
+  .theme:hover{transform:translateY(-3px);border-color:var(--line-2)}
+  .swatch{
+    height:120px;border-radius:4px;margin-bottom:16px;position:relative;overflow:hidden;
+    display:flex;align-items:flex-end;padding:10px;gap:6px;
+  }
+  .swatch .chip{width:18px;height:18px;border-radius:50%;border:1px solid rgba(255,255,255,.1)}
+  .theme .nm{font-family:'Instrument Serif',serif;font-style:italic;font-size:22px;line-height:1}
+  .theme .id{font-family:'JetBrains Mono',monospace;font-size:10px;color:var(--ink-faint);margin-top:6px;letter-spacing:.1em;text-transform:uppercase}
+  .theme .row{display:flex;justify-content:space-between;align-items:end;margin-top:10px}
+  .theme .check{font-family:'JetBrains Mono',monospace;font-size:10px;color:var(--mint)}
+
+  /* ---------- Platforms ---------- */
+  .platforms{padding:80px 0 100px;border-top:1px solid var(--line)}
+  .plat-head{display:flex;justify-content:space-between;align-items:end;margin-bottom:48px;flex-wrap:wrap;gap:24px}
+  .plat-head h3{font-family:'Instrument Serif',serif;font-style:italic;font-weight:400;font-size:clamp(40px,4.5vw,68px);line-height:1;letter-spacing:-.02em;max-width:700px}
+  .plat-grid{display:grid;grid-template-columns:repeat(6,1fr);gap:0;border:1px solid var(--line);border-radius:4px;overflow:hidden}
+  .plat{
+    padding:30px 22px;border-right:1px solid var(--line);
+    display:flex;flex-direction:column;gap:14px;min-height:200px;justify-content:space-between;
+    transition:background .3s;
+  }
+  .plat:last-child{border-right:0}
+  .plat:hover{background:var(--surface)}
+  .plat .icn{font-family:'JetBrains Mono',monospace;font-size:11px;color:var(--mint);letter-spacing:.16em}
+  .plat .nm{font-family:'Instrument Serif',serif;font-style:italic;font-size:30px;line-height:1}
+  .plat .ver{font-family:'JetBrains Mono',monospace;font-size:10px;color:var(--ink-faint);letter-spacing:.1em;text-transform:uppercase}
+  .plat .bar{height:2px;background:linear-gradient(90deg,var(--mint),transparent);border-radius:2px}
+
+  /* ---------- Broadcast / waveform CTA ---------- */
+  .broadcast{padding:120px 0 140px;position:relative;overflow:hidden;border-top:1px solid var(--line)}
+  .broadcast::before{
+    content:"";position:absolute;inset:0;
+    background:
+      radial-gradient(800px 400px at 20% 50%, rgba(142,236,208,.10), transparent 60%),
+      radial-gradient(700px 400px at 90% 50%, rgba(255,155,122,.06), transparent 60%);
+    pointer-events:none;
+  }
+  .broadcast-inner{position:relative;text-align:center;display:flex;flex-direction:column;align-items:center;gap:32px}
+  .broadcast h2{
+    font-family:'Instrument Serif',serif;font-style:italic;font-weight:400;
+    font-size:clamp(60px,10vw,160px);line-height:.88;letter-spacing:-.03em;text-wrap:balance;max-width:1100px;
+  }
+  .broadcast h2 .mint{color:var(--mint)}
+  .broadcast h2 .strike-out{position:relative;display:inline-block}
+  .broadcast h2 .strike-out::after{content:"";position:absolute;left:-4%;right:-4%;top:55%;height:6px;background:var(--coral);transform:rotate(-2deg)}
+  .broadcast p{color:var(--ink-dim);max-width:520px;font-size:15px;line-height:1.6}
+  .wave{display:flex;align-items:end;gap:3px;height:48px;margin-top:8px}
+  .wave span{display:block;width:3px;background:var(--mint);border-radius:2px;animation:wave 1.2s ease-in-out infinite}
+  @keyframes wave{0%,100%{height:6px;opacity:.4}50%{height:48px;opacity:1}}
+
+  /* ---------- Footer ---------- */
+  footer{padding:48px 0 38px;border-top:1px solid var(--line);background:var(--bg-2)}
+  .foot{display:grid;grid-template-columns:1.5fr 1fr 1fr 1fr;gap:40px;align-items:start}
+  .foot h4{font-family:'JetBrains Mono',monospace;font-size:11px;letter-spacing:.16em;text-transform:uppercase;color:var(--ink-faint);margin-bottom:18px}
+  .foot ul{list-style:none;display:flex;flex-direction:column;gap:10px}
+  .foot ul a{font-size:14px;color:var(--ink-dim);transition:color .2s}
+  .foot ul a:hover{color:var(--mint)}
+  .foot .brand .lg{font-family:'Instrument Serif',serif;font-style:italic;font-size:44px;line-height:1;color:var(--ink)}
+  .foot .brand .lg .mint{color:var(--mint)}
+  .foot .brand p{margin-top:14px;color:var(--ink-dim);font-size:13px;max-width:320px;line-height:1.6}
+  .foot-base{
+    margin-top:60px;padding-top:20px;border-top:1px solid var(--line);
+    display:flex;justify-content:space-between;flex-wrap:wrap;gap:12px;
+    font-family:'JetBrains Mono',monospace;font-size:11px;color:var(--ink-faint);letter-spacing:.1em;
+  }
+
+  /* ---------- ASCII / decorative bits ---------- */
+  .pre{
+    font-family:'JetBrains Mono',monospace;font-size:11px;color:var(--mint-deep);
+    white-space:pre;line-height:1.2;opacity:.7;
+  }
+
+  /* ---------- Interactive: channel tuner ---------- */
+  .phone .screen{position:relative}
+  .phone .screen img{position:absolute;inset:0;opacity:0;transition:opacity .45s ease;}
+  .phone .screen img.live{opacity:1;z-index:2}
+  .phone .scan{position:absolute;inset:0;pointer-events:none;z-index:3;opacity:0;background:
+    linear-gradient(180deg, transparent 0%, transparent 40%, rgba(142,236,208,.18) 50%, transparent 60%, transparent 100%);
+    transition:opacity .25s ease;
+  }
+  .phone.tuning .scan{opacity:1;animation:scan .5s linear}
+  @keyframes scan{0%{background-position:0 -100%}100%{background-position:0 200%}}
+  .phone.tuning .screen img.live{filter:contrast(1.05) hue-rotate(-6deg) blur(.4px)}
+
+  .tuner{
+    margin-top:24px;display:flex;align-items:center;justify-content:space-between;gap:14px;
+    padding:14px 16px;border:1px solid var(--line-2);border-radius:4px;background:var(--surface);
+    font-family:'JetBrains Mono',monospace;font-size:11px;color:var(--ink-dim);
+  }
+  .tuner .btn-t{
+    width:38px;height:38px;border-radius:50%;border:1px solid var(--line-2);background:var(--bg-2);color:var(--ink);
+    font-family:'JetBrains Mono',monospace;font-size:14px;cursor:pointer;
+    display:inline-flex;align-items:center;justify-content:center;
+    transition:transform .15s, border-color .2s, color .2s, background .2s;
+  }
+  .tuner .btn-t:hover{border-color:var(--mint);color:var(--mint);background:color-mix(in oklab, var(--mint) 8%, var(--bg-2))}
+  .tuner .btn-t:active{transform:scale(.94)}
+  .tuner .read{display:flex;flex-direction:column;align-items:center;gap:4px;flex:1}
+  .tuner .read .ch{color:var(--mint);font-size:11px;letter-spacing:.16em}
+  .tuner .read .nm{color:var(--ink);font-family:'Instrument Serif',serif;font-style:italic;font-size:20px;line-height:1}
+  .tuner .freq{display:flex;gap:3px;flex:0 0 auto}
+  .tuner .freq i{display:block;width:3px;height:14px;background:var(--line-2);border-radius:1px}
+  .tuner .freq i.on{background:var(--mint);box-shadow:0 0 6px var(--mint)}
+
+  /* ---------- Interactive: feature rows expandable ---------- */
+  .feat{cursor:pointer;user-select:none}
+  .feat .more{
+    grid-column:1/-1;
+    max-height:0;overflow:hidden;
+    transition:max-height .45s ease, opacity .35s ease, padding .35s ease;
+    opacity:0;padding:0 0 0 104px;
+  }
+  .feat.open .more{max-height:280px;opacity:1;padding:18px 0 6px 104px}
+  .feat .more-grid{display:grid;grid-template-columns:1fr 1fr 1fr;gap:32px;font-size:12px;color:var(--ink-dim);line-height:1.55}
+  .feat .more h5{font-family:'JetBrains Mono',monospace;font-size:10px;color:var(--mint);letter-spacing:.16em;text-transform:uppercase;margin-bottom:10px}
+  .feat .more code{font-family:'JetBrains Mono',monospace;font-size:11px;color:var(--amber);background:var(--bg-2);padding:2px 6px;border-radius:2px;border:1px solid var(--line)}
+  .feat .toggle{
+    position:absolute;right:0;top:34px;
+    width:30px;height:30px;display:inline-flex;align-items:center;justify-content:center;
+    border:1px solid var(--line-2);border-radius:50%;color:var(--ink-dim);font-family:'JetBrains Mono',monospace;font-size:14px;
+    transition:transform .3s ease, border-color .2s, color .2s, background .2s;
+  }
+  .feat:hover .toggle{border-color:var(--mint);color:var(--mint)}
+  .feat.open .toggle{transform:rotate(45deg);background:var(--mint);color:#062018;border-color:var(--mint)}
+  .feat .tags{padding-right:46px}
+
+  /* ---------- Interactive: theme cards as buttons ---------- */
+  .theme{cursor:pointer;border-radius:6px;font:inherit;color:inherit;text-align:left;width:100%}
+  button.theme{appearance:none;-webkit-appearance:none}
+  .theme.active{border-color:var(--mint);box-shadow:0 0 0 1px var(--mint), 0 16px 40px -20px rgba(142,236,208,.35)}
+  .theme.active .check{color:var(--mint)}
+  .theme:focus-visible{outline:2px solid var(--mint);outline-offset:3px}
+  .theme .scan-glow{position:absolute;inset:0;pointer-events:none;border-radius:6px;opacity:0;transition:opacity .3s;background:radial-gradient(400px 200px at var(--lx,50%) var(--ly,50%), color-mix(in oklab, var(--mint) 10%, transparent), transparent 60%)}
+  .theme:hover .scan-glow{opacity:1}
+
+  /* ---------- Interactive: ticker hover pause ---------- */
+  .ticker:hover .ticker-track{animation-play-state:paused}
+  .ticker .item{cursor:pointer;transition:color .2s}
+  .ticker .item:hover{color:var(--mint)}
+  .ticker .item:hover .src{color:var(--ink)}
+
+  /* ---------- Keyboard hint ---------- */
+  .kbhint{
+    position:fixed;left:50%;bottom:18px;transform:translateX(-50%);
+    z-index:45;display:flex;align-items:center;gap:14px;
+    padding:8px 14px;border:1px solid var(--line-2);border-radius:999px;background:color-mix(in oklab, var(--bg) 80%, transparent);backdrop-filter:blur(10px);
+    font-family:'JetBrains Mono',monospace;font-size:10px;color:var(--ink-dim);letter-spacing:.12em;
+    opacity:0;transition:opacity .4s ease, transform .4s ease;pointer-events:auto;
+    transform:translate(-50%,12px);
+  }
+  .kbhint.show{opacity:1;transform:translate(-50%,0)}
+  .kbhint kbd{
+    display:inline-block;padding:2px 6px;border:1px solid var(--line-2);border-radius:3px;
+    background:var(--surface);color:var(--ink);font-family:inherit;font-size:9px;letter-spacing:.05em;
+    box-shadow:0 1px 0 var(--line-2);
+  }
+  .kbhint .x{margin-left:6px;color:var(--ink-faint);cursor:pointer;font-size:14px;line-height:1}
+  .kbhint .x:hover{color:var(--coral)}
+
+  /* ---------- Toast for theme change ---------- */
+  .toast{
+    position:fixed;right:24px;top:74px;z-index:48;
+    border:1px solid var(--mint);background:color-mix(in oklab, var(--bg) 80%, transparent);backdrop-filter:blur(10px);
+    padding:10px 14px;border-radius:4px;
+    font-family:'JetBrains Mono',monospace;font-size:11px;color:var(--mint);letter-spacing:.14em;
+    opacity:0;transform:translateY(-8px);transition:opacity .25s, transform .25s;
+    pointer-events:none;
+  }
+  .toast.show{opacity:1;transform:translateY(0)}
+
+  /* ---------- Responsive ---------- */
+    .hero-grid{grid-template-columns:1fr;gap:40px}
+    .phone-col{order:2}
+    .quick{grid-template-columns:repeat(2,1fr)}
+    .quick > div:nth-child(2){border-right:0}
+    .quick > div:nth-child(1),.quick > div:nth-child(2){border-bottom:1px solid var(--line)}
+    .feat{grid-template-columns:50px 1fr;gap:14px}
+    .feat .desc{grid-column:1/-1;padding-left:64px}
+    .feat .tags{grid-column:1/-1;justify-content:flex-start;padding-left:64px}
+    .spot-grid{grid-template-columns:1fr 1fr;gap:18px}
+    .spot:nth-child(3){display:none}
+    .spot:nth-child(2){transform:none}
+    .theme-grid{grid-template-columns:repeat(2,1fr)}
+    .plat-grid{grid-template-columns:repeat(2,1fr)}
+    .plat{border-right:1px solid var(--line);border-bottom:1px solid var(--line)}
+    .foot{grid-template-columns:1fr 1fr;gap:30px}
+    .anno{display:none}
+    .manifesto-grid{grid-template-columns:1fr;gap:24px}
+    .themes-head{grid-template-columns:1fr}
+  }
+  @media (max-width:680px){
+    .top-inner{grid-template-columns:auto 1fr;gap:12px}
+    .top .right{display:none}
+    .wrap{padding:0 18px}
+    .spot-grid{grid-template-columns:1fr}
+    .spot:nth-child(2){display:none}
+    .plat-grid{grid-template-columns:1fr}
+    .theme-grid{grid-template-columns:1fr}
+    .foot{grid-template-columns:1fr}
+    .quick{grid-template-columns:1fr}
+    .quick > div{border-right:0;border-bottom:1px solid var(--line)}
+  }
+</style>
+</head>
+<body>
+
+<div class="grain"></div>
+
+<!-- ============== TOP STATUS BAR ============== -->
+<header class="top">
+  <div class="top-inner">
+    <div class="left mono uc">
+      <span><span class="pulse"></span>&nbsp;&nbsp;LIVE&nbsp;·&nbsp;CH 0x01</span>
+      <span class="dim">SIG 100%</span>
+      <span class="dim">42 FEEDS</span>
+    </div>
+    <div class="center mono uc">
+      <span style="color:var(--ink)">DONDURMA</span>
+      <span style="color:var(--ink-faint)">/</span>
+      <span style="color:var(--mint)">SIGNAL READER v1.0</span>
+    </div>
+    <div class="right mono uc">
+      <a href="#manifest">FEATURES</a>
+      <a href="#themes">THEMES</a>
+      <a href="#platforms">PLATFORMS</a>
+      <a href="#download" class="badge"><span style="width:5px;height:5px;border-radius:50%;background:var(--mint);display:inline-block"></span>v1.0 / FREE</a>
+    </div>
+  </div>
+</header>
+
+<!-- ============== HERO ============== -->
+<section class="hero">
+  <div class="wrap">
+    <div class="section-tag">
+      <span class="num mono">[ 00 ]</span>
+      <span class="ttl mono uc">Cold storage for warm news</span>
+      <span class="spacer"></span>
+      <span class="meta mono uc">EST. 2026 / TR · OSS</span>
+    </div>
+
+    <div class="hero-grid">
+      <!-- LEFT -->
+      <div>
+        <div class="eyebrow mono uc">
+          <span class="bar"></span>
+          <span>Open broadcast</span>
+          <span class="dim">·</span>
+          <span class="dim">No algorithm. No tracker. No noise.</span>
+        </div>
+
+        <h1 class="title">
+          Tune in to <span class="mint">the open</span>
+          <br/>web — <span class="stroke">again.</span>
+        </h1>
+
+        <p class="sub">
+          <b>Dondurma</b> is a beautifully crafted RSS &amp; Atom reader. It runs on every screen you own and answers only to you. No feed shuffling. No engagement traps. Just the channels you chose, in the order they aired.
+        </p>
+
+        <div class="cta-row">
+          <a href="#download" class="btn btn-primary">
+            <span>Download v1.0</span>
+            <span class="ar">→</span>
+          </a>
+          <a href="#manifest" class="btn">
+            <span>What's inside</span>
+            <span class="ar">↓</span>
+          </a>
+          <span class="mono" style="font-size:11px;color:var(--ink-faint);letter-spacing:.1em">
+            6 PLATFORMS · MIT LICENSE · 4.2 MB
+          </span>
+        </div>
+
+        <div class="quick">
+          <div>
+            <div class="k">/&nbsp;FEEDS</div>
+            <div class="v">∞</div>
+            <div class="vm">UNLIMITED</div>
+          </div>
+          <div>
+            <div class="k">/&nbsp;THEMES</div>
+            <div class="v">09</div>
+            <div class="vm">CATPPUCCIN INSIDE</div>
+          </div>
+          <div>
+            <div class="k">/&nbsp;LANGUAGES</div>
+            <div class="v">02</div>
+            <div class="vm">EN · TR · EXTENSIBLE</div>
+          </div>
+          <div>
+            <div class="k">/&nbsp;TRACKING</div>
+            <div class="v">00</div>
+            <div class="vm">ZERO. EVER.</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- RIGHT: phone -->
+      <div class="phone-col">
+        <div style="position:relative">
+          <div class="phone-tag mono">DEV.UNIT · IPHONE 17 PRO · 0x01</div>
+          <div class="phone" id="phone">
+            <div class="screen">
+              <img src="screenshots/feeds-dark.png" alt="Feeds" class="live" data-ch="01" data-name="Feeds / Dark" />
+              <img src="screenshots/folders-dark.png" alt="Folders" data-ch="02" data-name="Folders" />
+              <img src="screenshots/bookmarks-dark.png" alt="Bookmarks" data-ch="03" data-name="Bookmarks" />
+              <img src="screenshots/settings-dark.png" alt="Settings" data-ch="04" data-name="Settings" />
+              <img src="screenshots/feeds-light.png" alt="Feeds Light" data-ch="05" data-name="Feeds / Latte" />
+              <img src="screenshots/bookmarks-light.png" alt="Bookmarks Light" data-ch="06" data-name="Bookmarks / Latte" />
+              <img src="screenshots/settings-light.png" alt="Settings Light" data-ch="07" data-name="Settings / Latte" />
+              <img src="screenshots/onboarding.png" alt="Onboarding" data-ch="08" data-name="Onboarding / TR" />
+              <div class="scan"></div>
+            </div>
+          </div>
+          <div class="anno a1"><span>SRC</span>·<span class="v" id="anno-src">CH-01</span></div>
+          <div class="anno a2 left"><span>READ %</span>·<span class="v">42</span></div>
+          <div class="anno a3"><span>AGE</span>·<span class="v">2m</span></div>
+          <div class="anno a4 left"><span>BCAST</span>·<span class="v">ON</span></div>
+
+          <div class="phone-meta wrap" style="max-width:300px;padding:0">
+            <span><span class="dot"></span>FEED.DARK.01</span>
+            <span style="color:var(--ink-faint)">2532 × 1185</span>
+          </div>
+
+          <div class="tuner" style="max-width:300px;margin-left:auto;margin-right:auto" role="group" aria-label="Channel tuner">
+            <button class="btn-t" id="tunePrev" aria-label="Previous channel">←</button>
+            <div class="read">
+              <div class="ch">CH · <span id="chNum">01</span> / 08</div>
+              <div class="nm" id="chName">Feeds / Dark</div>
+            </div>
+            <div class="freq" id="freqBars" aria-hidden="true"></div>
+            <button class="btn-t" id="tuneNext" aria-label="Next channel">→</button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ============== LIVE TICKER ============== -->
+<div class="ticker" aria-hidden="true">
+  <div class="ticker-track">
+    <span class="item"><span class="src">[TECHRADAR]</span> AI is no longer borderless <span class="sep">//</span> <span class="glyph">▲</span> 4h</span>
+    <span class="item"><span class="src">[HACKER NEWS]</span> Linux 7.1 release notes for Bus drivers <span class="sep">//</span> <span class="glyph">●</span> 46m</span>
+    <span class="item"><span class="src">[WIRED]</span> The WIRED Gear Team's tips on saving money <span class="sep">//</span> <span class="glyph">◆</span> 5h</span>
+    <span class="item"><span class="src">[THE VERGE]</span> Instagram has launched another Snapchat clone <span class="sep">//</span> <span class="glyph">▲</span> 3h</span>
+    <span class="item"><span class="src">[GIZMODO]</span> A new Star Trek book maps every timeline <span class="sep">//</span> <span class="glyph">●</span> 3h</span>
+    <span class="item"><span class="src">[FORBES]</span> The first store designed &amp; run by AI <span class="sep">//</span> <span class="glyph">◆</span> 7h</span>
+    <span class="item"><span class="src">[CBR]</span> Dorohedoro is anime's best chaotic dark fantasy <span class="sep">//</span> <span class="glyph">▲</span> 1h</span>
+    <!-- duplicate for seamless scroll -->
+    <span class="item"><span class="src">[TECHRADAR]</span> AI is no longer borderless <span class="sep">//</span> <span class="glyph">▲</span> 4h</span>
+    <span class="item"><span class="src">[HACKER NEWS]</span> Linux 7.1 release notes for Bus drivers <span class="sep">//</span> <span class="glyph">●</span> 46m</span>
+    <span class="item"><span class="src">[WIRED]</span> The WIRED Gear Team's tips on saving money <span class="sep">//</span> <span class="glyph">◆</span> 5h</span>
+    <span class="item"><span class="src">[THE VERGE]</span> Instagram has launched another Snapchat clone <span class="sep">//</span> <span class="glyph">▲</span> 3h</span>
+    <span class="item"><span class="src">[GIZMODO]</span> A new Star Trek book maps every timeline <span class="sep">//</span> <span class="glyph">●</span> 3h</span>
+    <span class="item"><span class="src">[FORBES]</span> The first store designed &amp; run by AI <span class="sep">//</span> <span class="glyph">◆</span> 7h</span>
+    <span class="item"><span class="src">[CBR]</span> Dorohedoro is anime's best chaotic dark fantasy <span class="sep">//</span> <span class="glyph">▲</span> 1h</span>
+  </div>
+</div>
+
+<!-- ============== MANIFESTO ============== -->
+<section class="manifesto">
+  <div class="wrap">
+    <div class="section-tag">
+      <span class="num mono">[ 01 ]</span>
+      <span class="ttl mono uc">Operating principle</span>
+      <span class="spacer"></span>
+      <span class="meta mono uc">manifesto.txt · revised 04.26</span>
+    </div>
+
+    <div class="manifesto-grid">
+      <div class="left">
+        <pre class="pre">
+ ╔══════════════╗
+ ║   01010010   ║
+ ║   01010011   ║
+ ║   01010011   ║
+ ╚══════════════╝
+ R E A L L Y
+ S I M P L E
+ S Y N D I C A T E D
+        </pre>
+        <p>
+          RSS turned twenty-six. The web kept it, even when every big platform tried to bury it under timelines and recommendations.
+          Dondurma is built for the people who refused to forget.
+        </p>
+        <div class="stamp">// SIGNAL · OVER · NOISE</div>
+      </div>
+
+      <div class="right">
+        <h2>
+          A reader that <span class="strike">decides for you</span>.<br/>
+          A reader that <span class="mint">waits for you</span><br/>
+          to decide.
+        </h2>
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:36px;margin-top:42px">
+          <div>
+            <div class="mono uc" style="font-size:11px;color:var(--coral);letter-spacing:.16em;margin-bottom:10px">— WE REFUSE</div>
+            <p style="font-size:14px;line-height:1.6;color:var(--ink-dim)">
+              Algorithmic ranking. Engagement metrics. Push notifications you didn't ask for. Newsletter spam in disguise. Telemetry. Dark patterns. Vendor lock-in.
+            </p>
+          </div>
+          <div>
+            <div class="mono uc" style="font-size:11px;color:var(--mint);letter-spacing:.16em;margin-bottom:10px">+ WE KEEP</div>
+            <p style="font-size:14px;line-height:1.6;color:var(--ink-dim)">
+              Chronological order. Full-text extraction. Offline cache. OPML, your data, in &amp; out. Open source. A reading experience that respects the writer and the reader.
+            </p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ============== MANIFEST / FEATURES ============== -->
+<section class="manifest" id="manifest">
+  <div class="wrap">
+    <div class="section-tag">
+      <span class="num mono">[ 02 ]</span>
+      <span class="ttl mono uc">Operator manifest</span>
+      <span class="spacer"></span>
+      <span class="meta mono uc">28 verified · 0 dependencies you didn't agree to</span>
+    </div>
+
+    <div style="display:flex;justify-content:space-between;align-items:end;margin:48px 0 24px;gap:30px;flex-wrap:wrap">
+      <h3 style="font-family:'Instrument Serif',serif;font-style:italic;font-size:clamp(48px,6vw,96px);line-height:.92;letter-spacing:-.02em;max-width:880px">
+        Everything you need.<br/>
+        <span style="color:var(--mint)">Nothing</span> sneaking in.
+      </h3>
+      <div class="mono uc" style="font-size:11px;color:var(--ink-faint);letter-spacing:.14em;max-width:260px;text-align:right">
+        Scroll the manifest →<br/>each row is a real feature shipping today
+      </div>
+    </div>
+
+    <div class="manifest-head">
+      <span>CH /</span>
+      <span>NAME</span>
+      <span>DESCRIPTION</span>
+      <span style="text-align:right">TAGS</span>
+    </div>
+
+    <div class="feat" data-feat="01">
+      <div class="id">CH·01</div>
+      <div class="name">Subscribe to anything that broadcasts</div>
+      <div class="desc">RSS 2.0 &amp; Atom out of the box. Paste a feed URL or a homepage — Dondurma sniffs out the channel for you. OPML import and export keep your library portable forever.</div>
+      <div class="tags"><span class="tag mint">RSS</span><span class="tag mint">ATOM</span><span class="tag">OPML</span></div>
+      <span class="toggle">+</span>
+      <div class="more"><div class="more-grid">
+        <div><h5>Auto-discovery</h5>Paste <code>nytimes.com</code> — we'll find <code>/feed.xml</code> for you. Works on most blogs, news sites, podcasts, GitHub releases.</div>
+        <div><h5>OPML</h5>Import from Feedly, Inoreader, NetNewsWire, NewsBlur, anything that exports the standard. Export anytime to leave with everything.</div>
+        <div><h5>Channel limit</h5>None. The reader has been tested at <code>1,200+ feeds</code> per device without slowdown.</div>
+      </div></div>
+    </div>
+
+    <div class="feat" data-feat="02">
+      <div class="id">CH·02</div>
+      <div class="name">Folders &amp; categories, with personality</div>
+      <div class="desc">Group your channels into folders with custom emoji icons. Per-feed keyword filters quietly hide the topics you've outgrown — no shouting, just silence.</div>
+      <div class="tags"><span class="tag">FOLDERS</span><span class="tag">EMOJI</span><span class="tag coral">FILTERS</span></div>
+      <span class="toggle">+</span>
+      <div class="more"><div class="more-grid">
+        <div><h5>Nested groups</h5>One level of folders, on purpose. Two levels was a UX trap. Drag &amp; drop to re-order.</div>
+        <div><h5>Keyword filter</h5>Block any article whose title contains <code>crypto</code>, <code>NFT</code>, <code>celebrity</code> — your call. Per-feed or global.</div>
+        <div><h5>Icons</h5>Native emoji picker. Renders identically on every OS — finally.</div>
+      </div></div>
+    </div>
+
+    <div class="feat" data-feat="03">
+      <div class="id">CH·03</div>
+      <div class="name">A reading room built for actual reading</div>
+      <div class="desc">Full-screen article viewer with image carousels and PageView swipes between stories. Estimated reading time before you commit. Progress saved when you leave.</div>
+      <div class="tags"><span class="tag mint">READER</span><span class="tag">SWIPE</span><span class="tag">RESUME</span></div>
+      <span class="toggle">+</span>
+      <div class="more"><div class="more-grid">
+        <div><h5>Carousels</h5>Multi-image posts get a horizontal swipe gallery, not a wall of stacked photos.</div>
+        <div><h5>Resume</h5>Close the app at paragraph 14, come back to paragraph 14 — scroll position is per-article and survives device restarts.</div>
+        <div><h5>Reading time</h5>Calculated from word count with a baseline of <code>238 wpm</code>. Shown before you tap in.</div>
+      </div></div>
+    </div>
+
+    <div class="feat" data-feat="04">
+      <div class="id">CH·04</div>
+      <div class="name">Full-text extraction, even from excerpt feeds</div>
+      <div class="desc">Sites that only publish teasers get unwrapped automatically. No more tapping out to a paywalled tab — the whole article opens inside the reader.</div>
+      <div class="tags"><span class="tag mint">EXTRACTION</span><span class="tag">OFFLINE</span></div>
+      <span class="toggle">+</span>
+      <div class="more"><div class="more-grid">
+        <div><h5>Engine</h5>Readability-style DOM extraction running on-device. No third-party server sees the URL you opened.</div>
+        <div><h5>Fallback</h5>Sites that block extraction silently fall back to the in-app browser. Configurable per feed.</div>
+        <div><h5>Cache</h5>Extracted bodies cached locally for fast re-reads &amp; offline.</div>
+      </div></div>
+    </div>
+
+    <div class="feat" data-feat="05">
+      <div class="id">CH·05</div>
+      <div class="name">Nine themes. Catppuccin included.</div>
+      <div class="desc">System, Light, Dark, four Catppuccin flavors — Latte, Frappé, Macchiato, Mocha — and two high-contrast modes for tired eyes. Outfit typography throughout.</div>
+      <div class="tags"><span class="tag mint">×9 THEMES</span><span class="tag">A11Y</span></div>
+      <span class="toggle">+</span>
+      <div class="more"><div class="more-grid">
+        <div><h5>Live preview</h5>Scroll down — tap a theme card. The site you're on right now re-skins to match the app.</div>
+        <div><h5>System sync</h5>System theme follows iOS / Android / macOS appearance and time-of-day automatically.</div>
+        <div><h5>Contrast</h5>Two AAA-rated high-contrast presets verified against WCAG 2.2.</div>
+      </div></div>
+    </div>
+
+    <div class="feat" data-feat="06">
+      <div class="id">CH·06</div>
+      <div class="name">A browser inside the reader</div>
+      <div class="desc">Tap a link, stay inside the app. Built-in WebView with EasyList + AdGuard ad blocking. Or kick it out to your system browser — your choice.</div>
+      <div class="tags"><span class="tag">WEBVIEW</span><span class="tag mint">AD-BLOCK</span></div>
+      <span class="toggle">+</span>
+      <div class="more"><div class="more-grid">
+        <div><h5>Filter lists</h5><code>EasyList</code> + <code>AdGuard Base</code> applied on every navigation. Toggle per-session.</div>
+        <div><h5>Dark mode bridge</h5>Force a dark stylesheet onto any article so you don't get flash-banged at 2am.</div>
+        <div><h5>External</h5>Built-in / external Chrome / Safari / system default — pick once, change anytime.</div>
+      </div></div>
+    </div>
+
+    <div class="feat" data-feat="07">
+      <div class="id">CH·07</div>
+      <div class="name">Notifications that respect quiet hours</div>
+      <div class="desc">Get a buzz when something genuinely new lands. Digest mode batches the small stuff. A configurable quiet window means the reader sleeps when you do.</div>
+      <div class="tags"><span class="tag">DIGEST</span><span class="tag coral">QUIET</span></div>
+      <span class="toggle">+</span>
+      <div class="more"><div class="more-grid">
+        <div><h5>Digest</h5>One bundled notification per N hours, instead of one buzz per article. Choose your N.</div>
+        <div><h5>Quiet hours</h5>Pick a window like <code>22:00 → 08:00</code>. Notifications queue silently and deliver when you wake.</div>
+        <div><h5>Tap to jump</h5>Tap a notification and land directly on the article — no list traversal.</div>
+      </div></div>
+    </div>
+
+    <div class="feat" data-feat="08">
+      <div class="id">CH·08</div>
+      <div class="name">Offline cache &amp; background sync</div>
+      <div class="desc">Articles stay readable on the subway, on the plane, anywhere. Background refresh on your schedule. Image cache and skeleton shimmers that mirror the real layout.</div>
+      <div class="tags"><span class="tag mint">OFFLINE</span><span class="tag">SYNC</span><span class="tag">CACHE</span></div>
+      <span class="toggle">+</span>
+      <div class="more"><div class="more-grid">
+        <div><h5>Schedule</h5>Choose <code>15m / 1h / 6h / manual</code>. Background work respects OS battery rules.</div>
+        <div><h5>Skeletons</h5>Loading states mirror the exact card layout — no jarring layout shifts when the real data lands.</div>
+        <div><h5>Pagination</h5>Date-bucketed: <em>Today</em> · <em>Yesterday</em> · <em>Older</em>. Load-more on demand.</div>
+      </div></div>
+    </div>
+
+    <div class="feat" data-feat="09">
+      <div class="id">CH·09</div>
+      <div class="name">Swipe to bookmark, swipe to share</div>
+      <div class="desc">Left swipe saves an article for later. Right swipe toggles read state. Persistent search history brings back what you almost forgot.</div>
+      <div class="tags"><span class="tag">GESTURES</span><span class="tag mint">BOOKMARKS</span></div>
+      <span class="toggle">+</span>
+      <div class="more"><div class="more-grid">
+        <div><h5>Gestures</h5>Left → bookmark. Right → read/unread toggle. Long-press → system share sheet.</div>
+        <div><h5>Search</h5>Title + body full-text. Recent queries remembered. Tap to re-run.</div>
+        <div><h5>Bookmarks tab</h5>A separate channel of its own, sortable by source or date.</div>
+      </div></div>
+    </div>
+
+  </div>
+</section>
+
+<!-- ============== SPOTLIGHT ============== -->
+<section class="spotlight">
+  <div class="wrap">
+    <div class="section-tag">
+      <span class="num mono">[ 03 ]</span>
+      <span class="ttl mono uc">Receiver gallery</span>
+      <span class="spacer"></span>
+      <span class="meta mono uc">three of nine modes shown</span>
+    </div>
+
+    <div class="spot-head" style="margin-top:40px">
+      <h3>The same signal,<br/><span style="color:var(--mint);font-style:italic">tuned for every mood.</span></h3>
+      <p>Every theme is hand-balanced for contrast, focus, and long reading sessions. Switch instantly. Your subscriptions don't notice; your eyes do.</p>
+    </div>
+
+    <div class="spot-grid">
+      <div class="spot">
+        <div class="frame"><img src="screenshots/feeds-dark-2.png" alt="Dark theme feeds"/></div>
+        <div class="spot-cap"><span><span class="ch">CH·01</span> · DARK CLASSIC</span><span class="nm">Nightshift</span></div>
+      </div>
+      <div class="spot">
+        <div class="frame"><img src="screenshots/folders-light.png" alt="Light Latte theme folders"/></div>
+        <div class="spot-cap"><span><span class="ch">CH·02</span> · LATTE LIGHT</span><span class="nm">Daybreak</span></div>
+      </div>
+      <div class="spot">
+        <div class="frame"><img src="screenshots/settings-dark.png" alt="Settings screen"/></div>
+        <div class="spot-cap"><span><span class="ch">CH·03</span> · ENGINE ROOM</span><span class="nm">Cockpit</span></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ============== THEMES ============== -->
+<section class="themes" id="themes">
+  <div class="wrap">
+    <div class="section-tag">
+      <span class="num mono">[ 04 ]</span>
+      <span class="ttl mono uc">Frequency presets</span>
+      <span class="spacer"></span>
+      <span class="meta mono uc">9 / 9 shipped · catppuccin licensed</span>
+    </div>
+
+    <div class="themes-head" style="margin-top:40px">
+      <h3>Nine ways<br/>to <span class="mint">read the air.</span></h3>
+      <p>System, Light, Dark, the four canonical Catppuccin flavors, and two high-contrast presets. Each switches the entire surface — chrome, cards, swipe indicators, even the ad-blocker toggle — in one tap.</p>
+    </div>
+
+    <div class="theme-grid" id="themeGrid">
+      <button class="theme" data-theme="latte" type="button">
+        <div class="scan-glow"></div>
+        <div class="swatch" style="background:linear-gradient(135deg,#dce0e8,#eff1f5)">
+          <div class="chip" style="background:#1e66f5"></div>
+          <div class="chip" style="background:#d20f39"></div>
+          <div class="chip" style="background:#40a02b"></div>
+          <div class="chip" style="background:#4c4f69"></div>
+        </div>
+        <div class="row">
+          <div>
+            <div class="nm">Latte</div>
+            <div class="id">CAT · 01 / LIGHT</div>
+          </div>
+          <div class="check">○</div>
+        </div>
+      </button>
+
+      <button class="theme" data-theme="frappe" type="button">
+        <div class="scan-glow"></div>
+        <div class="swatch" style="background:linear-gradient(135deg,#414559,#51576d)">
+          <div class="chip" style="background:#8caaee"></div>
+          <div class="chip" style="background:#f4b8e4"></div>
+          <div class="chip" style="background:#a6d189"></div>
+          <div class="chip" style="background:#c6d0f5"></div>
+        </div>
+        <div class="row">
+          <div>
+            <div class="nm">Frappé</div>
+            <div class="id">CAT · 02 / WARM DARK</div>
+          </div>
+          <div class="check">○</div>
+        </div>
+      </button>
+
+      <button class="theme" data-theme="macchiato" type="button">
+        <div class="scan-glow"></div>
+        <div class="swatch" style="background:linear-gradient(135deg,#363a4f,#494d64)">
+          <div class="chip" style="background:#8aadf4"></div>
+          <div class="chip" style="background:#f5bde6"></div>
+          <div class="chip" style="background:#a6da95"></div>
+          <div class="chip" style="background:#cad3f5"></div>
+        </div>
+        <div class="row">
+          <div>
+            <div class="nm">Macchiato</div>
+            <div class="id">CAT · 03 / MID DARK</div>
+          </div>
+          <div class="check">○</div>
+        </div>
+      </button>
+
+      <button class="theme" data-theme="mocha" type="button">
+        <div class="scan-glow"></div>
+        <div class="swatch" style="background:linear-gradient(135deg,#1e1e2e,#313244)">
+          <div class="chip" style="background:#89b4fa"></div>
+          <div class="chip" style="background:#f5c2e7"></div>
+          <div class="chip" style="background:#a6e3a1"></div>
+          <div class="chip" style="background:#cdd6f4"></div>
+        </div>
+        <div class="row">
+          <div>
+            <div class="nm">Mocha</div>
+            <div class="id">CAT · 04 / DEEP DARK</div>
+          </div>
+          <div class="check">○</div>
+        </div>
+      </button>
+
+      <button class="theme" data-theme="light" type="button">
+        <div class="scan-glow"></div>
+        <div class="swatch" style="background:linear-gradient(135deg,#ffffff,#f3f4f6)">
+          <div class="chip" style="background:#111"></div>
+          <div class="chip" style="background:#444"></div>
+          <div class="chip" style="background:#777"></div>
+          <div class="chip" style="background:#aaa"></div>
+        </div>
+        <div class="row">
+          <div>
+            <div class="nm">Light</div>
+            <div class="id">SYS · 05 / DEFAULT</div>
+          </div>
+          <div class="check">○</div>
+        </div>
+      </button>
+
+      <button class="theme" data-theme="dark" type="button">
+        <div class="scan-glow"></div>
+        <div class="swatch" style="background:linear-gradient(135deg,#0a0a0a,#161616)">
+          <div class="chip" style="background:#eee"></div>
+          <div class="chip" style="background:#bbb"></div>
+          <div class="chip" style="background:#888"></div>
+          <div class="chip" style="background:#444"></div>
+        </div>
+        <div class="row">
+          <div>
+            <div class="nm">Dark</div>
+            <div class="id">SYS · 06 / CLASSIC</div>
+          </div>
+          <div class="check">○</div>
+        </div>
+      </button>
+
+      <button class="theme" data-theme="hc-light" type="button">
+        <div class="scan-glow"></div>
+        <div class="swatch" style="background:linear-gradient(135deg,#fff,#f5f5f5)">
+          <div class="chip" style="background:#000"></div>
+          <div class="chip" style="background:#ffd60a"></div>
+          <div class="chip" style="background:#000"></div>
+          <div class="chip" style="background:#ffd60a"></div>
+        </div>
+        <div class="row">
+          <div>
+            <div class="nm">HC&nbsp;Light</div>
+            <div class="id">A11Y · 07 / HIGH-CONTRAST</div>
+          </div>
+          <div class="check">○</div>
+        </div>
+      </button>
+
+      <button class="theme" data-theme="hc-dark" type="button">
+        <div class="scan-glow"></div>
+        <div class="swatch" style="background:linear-gradient(135deg,#000,#0a0a0a)">
+          <div class="chip" style="background:#fff"></div>
+          <div class="chip" style="background:#ffd60a"></div>
+          <div class="chip" style="background:#00f5a0"></div>
+          <div class="chip" style="background:#fff"></div>
+        </div>
+        <div class="row">
+          <div>
+            <div class="nm">HC&nbsp;Dark</div>
+            <div class="id">A11Y · 08 / HIGH-CONTRAST</div>
+          </div>
+          <div class="check">○</div>
+        </div>
+      </button>
+
+      <button class="theme active" data-theme="signal" type="button">
+        <div class="scan-glow"></div>
+        <div class="swatch" style="background:linear-gradient(135deg,#0a0d0c,#161e22)">
+          <div class="chip" style="background:#8eecd0"></div>
+          <div class="chip" style="background:#ff9b7a"></div>
+          <div class="chip" style="background:#ffd27a"></div>
+          <div class="chip" style="background:#e8efe9"></div>
+        </div>
+        <div class="row">
+          <div>
+            <div class="nm">Signal</div>
+            <div class="id">SYS · 09 / DEFAULT</div>
+          </div>
+          <div class="check">● ACTIVE</div>
+        </div>
+      </button>
+    </div>
+  </div>
+</section>
+
+<!-- ============== PLATFORMS ============== -->
+<section class="platforms" id="platforms">
+  <div class="wrap">
+    <div class="section-tag">
+      <span class="num mono">[ 05 ]</span>
+      <span class="ttl mono uc">Broadcasting on</span>
+      <span class="spacer"></span>
+      <span class="meta mono uc">one codebase · six receivers</span>
+    </div>
+
+    <div class="plat-head" style="margin-top:40px">
+      <h3>Built once.<br/><span style="color:var(--mint);font-style:italic">Tunes in everywhere.</span></h3>
+      <div class="mono uc" style="font-size:11px;color:var(--ink-faint);letter-spacing:.14em;max-width:300px">
+        Powered by Flutter &amp; Material 3.<br/>
+        Same feeds, same bookmarks, same theme — wherever you read.
+      </div>
+    </div>
+
+    <div class="plat-grid">
+      <div class="plat">
+        <div>
+          <div class="icn">/&nbsp;01</div>
+          <div class="nm" style="margin-top:10px">iOS</div>
+        </div>
+        <div>
+          <div class="bar"></div>
+          <div class="ver" style="margin-top:10px">17.0 +</div>
+        </div>
+      </div>
+      <div class="plat">
+        <div>
+          <div class="icn">/&nbsp;02</div>
+          <div class="nm" style="margin-top:10px">Android</div>
+        </div>
+        <div>
+          <div class="bar"></div>
+          <div class="ver" style="margin-top:10px">API 26 +</div>
+        </div>
+      </div>
+      <div class="plat">
+        <div>
+          <div class="icn">/&nbsp;03</div>
+          <div class="nm" style="margin-top:10px">macOS</div>
+        </div>
+        <div>
+          <div class="bar"></div>
+          <div class="ver" style="margin-top:10px">12 +</div>
+        </div>
+      </div>
+      <div class="plat">
+        <div>
+          <div class="icn">/&nbsp;04</div>
+          <div class="nm" style="margin-top:10px">Windows</div>
+        </div>
+        <div>
+          <div class="bar"></div>
+          <div class="ver" style="margin-top:10px">10 / 11</div>
+        </div>
+      </div>
+      <div class="plat">
+        <div>
+          <div class="icn">/&nbsp;05</div>
+          <div class="nm" style="margin-top:10px">Linux</div>
+        </div>
+        <div>
+          <div class="bar"></div>
+          <div class="ver" style="margin-top:10px">x64 · ARM</div>
+        </div>
+      </div>
+      <div class="plat">
+        <div>
+          <div class="icn">/&nbsp;06</div>
+          <div class="nm" style="margin-top:10px">Web</div>
+        </div>
+        <div>
+          <div class="bar"></div>
+          <div class="ver" style="margin-top:10px">PWA · ANY</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ============== BROADCAST / CTA ============== -->
+<section class="broadcast" id="download">
+  <div class="broadcast-inner wrap">
+    <div class="mono uc" style="font-size:11px;color:var(--mint);letter-spacing:.18em;display:flex;align-items:center;gap:12px">
+      <span class="pulse"></span> NOW BROADCASTING / VERSION 1.0 / GO-LIVE
+    </div>
+
+    <h2>
+      Step away from <span class="strike-out">the feed</span>.<br/>
+      Step into <span class="mint">your feeds.</span>
+    </h2>
+
+    <p>
+      Free. Open source. Yours to fork, your data to keep.
+      Available on every device you own, today.
+    </p>
+
+    <div class="wave">
+      <span style="animation-delay:0s"></span>
+      <span style="animation-delay:.1s"></span>
+      <span style="animation-delay:.2s"></span>
+      <span style="animation-delay:.3s"></span>
+      <span style="animation-delay:.4s"></span>
+      <span style="animation-delay:.5s"></span>
+      <span style="animation-delay:.6s"></span>
+      <span style="animation-delay:.5s"></span>
+      <span style="animation-delay:.4s"></span>
+      <span style="animation-delay:.3s"></span>
+      <span style="animation-delay:.2s"></span>
+      <span style="animation-delay:.1s"></span>
+      <span style="animation-delay:0s"></span>
+      <span style="animation-delay:.1s"></span>
+      <span style="animation-delay:.2s"></span>
+      <span style="animation-delay:.3s"></span>
+      <span style="animation-delay:.4s"></span>
+      <span style="animation-delay:.5s"></span>
+      <span style="animation-delay:.6s"></span>
+    </div>
+
+    <div class="cta-row" style="justify-content:center">
+      <a href="#" class="btn btn-primary"><span>Download for iOS</span><span class="ar">→</span></a>
+      <a href="#" class="btn"><span>Android · Web · Desktop</span><span class="ar">→</span></a>
+      <a href="#" class="btn"><span>View Source</span><span class="ar">↗</span></a>
+    </div>
+  </div>
+</section>
+
+<!-- ============== FOOTER ============== -->
+<footer>
+  <div class="wrap">
+    <div class="foot">
+      <div class="brand">
+        <div class="lg">Dondurma<span class="mint">.</span></div>
+        <p>An RSS reader from Türkiye 🇹🇷, named after ice cream. Cold storage for warm news. Built with Flutter &amp; Material 3, licensed MIT, run by humans.</p>
+      </div>
+      <div>
+        <h4>Receiver</h4>
+        <ul>
+          <li><a href="#">iOS · App Store</a></li>
+          <li><a href="#">Android · Play / F-Droid</a></li>
+          <li><a href="#">macOS · DMG</a></li>
+          <li><a href="#">Windows · MSIX</a></li>
+          <li><a href="#">Linux · AppImage</a></li>
+          <li><a href="#">Web · PWA</a></li>
+        </ul>
+      </div>
+      <div>
+        <h4>Channel</h4>
+        <ul>
+          <li><a href="#">Source · GitHub</a></li>
+          <li><a href="#">Changelog</a></li>
+          <li><a href="#">Roadmap</a></li>
+          <li><a href="#">OPML &amp; import guide</a></li>
+          <li><a href="#">Translations · ARB</a></li>
+        </ul>
+      </div>
+      <div>
+        <h4>Static</h4>
+        <ul>
+          <li><a href="#">Press kit</a></li>
+          <li><a href="#">License · MIT</a></li>
+          <li><a href="#">Privacy · n/a</a></li>
+          <li><a href="#">Contact · @dondurma</a></li>
+        </ul>
+      </div>
+    </div>
+
+    <div class="foot-base">
+      <span>© 2026 · DONDURMA / SIGNAL READER · MIT</span>
+      <span>NO ALGORITHM. NO TRACKER. NO COOKIES ON THIS PAGE EITHER.</span>
+      <span>BUILT IN İSTANBUL · LAT 41.0082 / LON 28.9784</span>
+    </div>
+  </div>
+</footer>
+
+<!-- ============== INTERACTIVE OVERLAYS ============== -->
+<div class="kbhint" id="kbhint" role="status">
+  <span><kbd>←</kbd> <kbd>→</kbd> tune channel</span>
+  <span style="color:var(--ink-faint)">·</span>
+  <span><kbd>T</kbd> cycle theme</span>
+  <span style="color:var(--ink-faint)">·</span>
+  <span><kbd>F</kbd> feature focus</span>
+  <span class="x" id="kbhintX" title="Dismiss">×</span>
+</div>
+
+<div class="toast" id="toast">THEME / SIGNAL</div>
+
+<script>
+(() => {
+  // ============ THEMES ============
+  // Each theme defines the full palette and a body-gradient hint
+  const THEMES = {
+    'signal':    { bg:'#07090a', bg2:'#0c1011', surface:'#11171a', surface2:'#161e22', line:'#1f2a2e', line2:'#2a3a40', ink:'#e8efe9', inkDim:'#97a3a0', inkFaint:'#56635f', mint:'#8eecd0', coral:'#ff9b7a', amber:'#ffd27a', label:'SIGNAL · DEFAULT' },
+    'mocha':     { bg:'#11111b', bg2:'#181825', surface:'#1e1e2e', surface2:'#313244', line:'#313244', line2:'#45475a', ink:'#cdd6f4', inkDim:'#a6adc8', inkFaint:'#6c7086', mint:'#a6e3a1', coral:'#fab387', amber:'#f9e2af', label:'CATPPUCCIN · MOCHA' },
+    'macchiato': { bg:'#181926', bg2:'#1e2030', surface:'#24273a', surface2:'#363a4f', line:'#363a4f', line2:'#494d64', ink:'#cad3f5', inkDim:'#a5adcb', inkFaint:'#6e738d', mint:'#a6da95', coral:'#f5a97f', amber:'#eed49f', label:'CATPPUCCIN · MACCHIATO' },
+    'frappe':    { bg:'#232634', bg2:'#292c3c', surface:'#303446', surface2:'#414559', line:'#414559', line2:'#51576d', ink:'#c6d0f5', inkDim:'#a5adce', inkFaint:'#737994', mint:'#a6d189', coral:'#ef9f76', amber:'#e5c890', label:'CATPPUCCIN · FRAPPÉ' },
+    'latte':     { bg:'#eff1f5', bg2:'#e6e9ef', surface:'#dce0e8', surface2:'#ccd0da', line:'#bcc0cc', line2:'#acb0be', ink:'#4c4f69', inkDim:'#6c6f85', inkFaint:'#9ca0b0', mint:'#40a02b', coral:'#fe640b', amber:'#df8e1d', label:'CATPPUCCIN · LATTE' },
+    'light':     { bg:'#fafafa', bg2:'#f4f4f4', surface:'#ffffff', surface2:'#eeeeee', line:'#e2e2e2', line2:'#cccccc', ink:'#0a0a0a', inkDim:'#555555', inkFaint:'#999999', mint:'#0e7c66', coral:'#c84a1c', amber:'#9a6b00', label:'SYSTEM · LIGHT' },
+    'dark':      { bg:'#0a0a0a', bg2:'#111111', surface:'#161616', surface2:'#1f1f1f', line:'#262626', line2:'#3a3a3a', ink:'#f5f5f5', inkDim:'#a3a3a3', inkFaint:'#666666', mint:'#3ddc97', coral:'#ff7b54', amber:'#ffc94d', label:'SYSTEM · DARK' },
+    'hc-light':  { bg:'#ffffff', bg2:'#f5f5f5', surface:'#ffffff', surface2:'#f0f0f0', line:'#000000', line2:'#000000', ink:'#000000', inkDim:'#000000', inkFaint:'#444444', mint:'#0050ff', coral:'#d8000c', amber:'#a76b00', label:'A11Y · HC LIGHT' },
+    'hc-dark':   { bg:'#000000', bg2:'#050505', surface:'#0a0a0a', surface2:'#141414', line:'#ffffff', line2:'#ffffff', ink:'#ffffff', inkDim:'#ffffff', inkFaint:'#bbbbbb', mint:'#00f5a0', coral:'#ffd60a', amber:'#ffd60a', label:'A11Y · HC DARK' },
+  };
+  const THEME_ORDER = ['signal','mocha','macchiato','frappe','latte','light','dark','hc-light','hc-dark'];
+
+  function applyTheme(name){
+    const t = THEMES[name];
+    if(!t) return;
+    document.documentElement.classList.add('theming');
+    const r = document.documentElement.style;
+    r.setProperty('--bg', t.bg);
+    r.setProperty('--bg-2', t.bg2);
+    r.setProperty('--surface', t.surface);
+    r.setProperty('--surface-2', t.surface2);
+    r.setProperty('--line', t.line);
+    r.setProperty('--line-2', t.line2);
+    r.setProperty('--ink', t.ink);
+    r.setProperty('--ink-dim', t.inkDim);
+    r.setProperty('--ink-faint', t.inkFaint);
+    r.setProperty('--mint', t.mint);
+    r.setProperty('--coral', t.coral);
+    r.setProperty('--amber', t.amber);
+    // active state on cards
+    document.querySelectorAll('.theme').forEach(b => {
+      const on = b.dataset.theme === name;
+      b.classList.toggle('active', on);
+      const chk = b.querySelector('.check');
+      if(chk) chk.textContent = on ? '● ACTIVE' : '○';
+    });
+    // toast
+    const tt = document.getElementById('toast');
+    tt.textContent = '◉ THEME LOADED · ' + t.label;
+    tt.classList.add('show');
+    clearTimeout(applyTheme._tt);
+    applyTheme._tt = setTimeout(() => tt.classList.remove('show'), 1600);
+    setTimeout(() => document.documentElement.classList.remove('theming'), 700);
+    try{ localStorage.setItem('dondurma:theme', name); }catch(_){}
+  }
+  document.querySelectorAll('.theme').forEach(b => {
+    b.addEventListener('click', () => applyTheme(b.dataset.theme));
+    b.addEventListener('mousemove', e => {
+      const r = b.getBoundingClientRect();
+      b.style.setProperty('--lx', (e.clientX - r.left) + 'px');
+      b.style.setProperty('--ly', (e.clientY - r.top) + 'px');
+    });
+  });
+  // restore
+  try{
+    const saved = localStorage.getItem('dondurma:theme');
+    if(saved && THEMES[saved] && saved !== 'signal') applyTheme(saved);
+  }catch(_){}
+
+  // ============ CHANNEL TUNER ============
+  const imgs = [...document.querySelectorAll('.phone .screen img')];
+  let chIdx = 0;
+  const chNum = document.getElementById('chNum');
+  const chName = document.getElementById('chName');
+  const annoSrc = document.getElementById('anno-src');
+  const phone = document.getElementById('phone');
+  const freq = document.getElementById('freqBars');
+  // build freq bars
+  if(freq){
+    freq.innerHTML = '';
+    for(let i=0;i<12;i++) freq.appendChild(document.createElement('i'));
+  }
+  function setCh(n){
+    chIdx = (n + imgs.length) % imgs.length;
+    imgs.forEach((im,i) => im.classList.toggle('live', i === chIdx));
+    const img = imgs[chIdx];
+    chNum.textContent = img.dataset.ch;
+    chName.textContent = img.dataset.name;
+    annoSrc.textContent = 'CH-' + img.dataset.ch;
+    // randomize freq bars
+    [...freq.children].forEach(b => b.classList.toggle('on', Math.random() < 0.55));
+    phone.classList.add('tuning');
+    setTimeout(() => phone.classList.remove('tuning'), 480);
+  }
+  document.getElementById('tuneNext')?.addEventListener('click', () => setCh(chIdx + 1));
+  document.getElementById('tunePrev')?.addEventListener('click', () => setCh(chIdx - 1));
+  setCh(0);
+  // arrow key tuning
+  document.addEventListener('keydown', e => {
+    if(e.target.matches('input,textarea')) return;
+    if(e.key === 'ArrowRight'){ setCh(chIdx + 1); }
+    else if(e.key === 'ArrowLeft'){ setCh(chIdx - 1); }
+    else if(e.key === 't' || e.key === 'T'){
+      const cur = THEME_ORDER.findIndex(n => document.querySelector(`.theme[data-theme="${n}"]`)?.classList.contains('active'));
+      applyTheme(THEME_ORDER[(cur + 1) % THEME_ORDER.length]);
+    }
+    else if(e.key === 'f' || e.key === 'F'){
+      document.getElementById('manifest')?.scrollIntoView({behavior:'smooth', block:'start'});
+    }
+  });
+  // auto-cycle every 6s until user interacts
+  let autoCycle = setInterval(() => setCh(chIdx + 1), 6500);
+  ['click','keydown','touchstart'].forEach(ev =>
+    document.addEventListener(ev, () => { clearInterval(autoCycle); autoCycle = null; }, { once:true })
+  );
+
+  // ============ FEATURE ROWS ============
+  document.querySelectorAll('.feat').forEach(row => {
+    row.addEventListener('click', e => {
+      // Don't toggle if clicking on a tag
+      if(e.target.closest('.tag')) return;
+      row.classList.toggle('open');
+    });
+  });
+
+  // ============ MOUSE-TRACKED BACKGROUND ============
+  let rafPending = false;
+  let lastMx = 50, lastMy = 30;
+  document.addEventListener('mousemove', e => {
+    lastMx = (e.clientX / window.innerWidth) * 100;
+    lastMy = (e.clientY / window.innerHeight) * 100;
+    if(!rafPending){
+      rafPending = true;
+      requestAnimationFrame(() => {
+        document.body.style.setProperty('--mx', lastMx + '%');
+        document.body.style.setProperty('--my', lastMy + '%');
+        rafPending = false;
+      });
+    }
+  });
+
+  // ============ KEYBOARD HINT ============
+  const kbhint = document.getElementById('kbhint');
+  const kbDismissed = (() => { try{ return localStorage.getItem('dondurma:kbhint') === '0'; }catch(_){ return false; } })();
+  if(!kbDismissed){
+    setTimeout(() => kbhint.classList.add('show'), 1200);
+    setTimeout(() => kbhint.classList.remove('show'), 9000);
+  }
+  document.getElementById('kbhintX')?.addEventListener('click', () => {
+    kbhint.classList.remove('show');
+    try{ localStorage.setItem('dondurma:kbhint','0'); }catch(_){}
+  });
+
+  // ============ LIVE CLOCK in top bar ============
+  // Replace SIG 100% with rolling timecode
+  const topLeft = document.querySelector('.top .left');
+  if(topLeft){
+    const dimEls = topLeft.querySelectorAll('.dim');
+    if(dimEls[0]){
+      const tick = () => {
+        const d = new Date();
+        const hh = String(d.getHours()).padStart(2,'0');
+        const mm = String(d.getMinutes()).padStart(2,'0');
+        const ss = String(d.getSeconds()).padStart(2,'0');
+        dimEls[0].textContent = hh+':'+mm+':'+ss;
+      };
+      tick(); setInterval(tick, 1000);
+    }
+  }
+})();
+</script>
+
+</body>
+</html>

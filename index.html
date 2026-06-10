@@ -46,6 +46,7 @@
   *{box-sizing:border-box;margin:0;padding:0}
   html,body{background:var(--bg);color:var(--ink);font-family:'Space Grotesk',sans-serif;-webkit-font-smoothing:antialiased;text-rendering:optimizeLegibility;
     transition:background-color .55s ease, color .35s ease;
+    overflow-x:hidden;
   }
   html.theming *{
     transition: background-color .5s ease, color .35s ease, border-color .5s ease, box-shadow .5s ease, fill .35s ease, stroke .35s ease !important;
@@ -87,12 +88,45 @@
     display:grid;grid-template-columns:1fr auto 1fr;align-items:center;gap:24px;
     font-size:11px;
   }
-  .top .left, .top .right{display:flex;align-items:center;gap:18px;color:var(--ink-dim)}
-  .top .right{justify-content:flex-end}
-  .top .center{display:flex;align-items:center;gap:10px}
+  .top .left, .top .right{display:flex;align-items:center;gap:14px;color:var(--ink-dim)}
+  .top .right{justify-content:flex-end;flex-wrap:nowrap}
+  .top .center{display:flex;align-items:center;gap:10px;white-space:nowrap}
+  .top .right > a, .top .right > span{white-space:nowrap}
+  .lang-group{display:flex;align-items:center;gap:4px;padding-left:10px;border-left:1px solid var(--line);flex-shrink:0}
+
+  /* ---------- Hamburger button ---------- */
+  .ham-btn{
+    display:none;flex-direction:column;justify-content:center;align-items:center;gap:5px;
+    background:none;border:1px solid var(--line);color:var(--ink-dim);cursor:pointer;
+    padding:7px 9px;transition:border-color .2s,color .2s;flex-shrink:0;
+  }
+  .ham-btn:hover{border-color:var(--mint);color:var(--mint)}
+  .ham-btn span{display:block;width:16px;height:1.5px;background:currentColor;transition:transform .3s,opacity .2s}
+  .ham-btn.open span:nth-child(1){transform:translateY(6.5px) rotate(45deg)}
+  .ham-btn.open span:nth-child(2){opacity:0;transform:scaleX(0)}
+  .ham-btn.open span:nth-child(3){transform:translateY(-6.5px) rotate(-45deg)}
+
+  /* ---------- Mobile drawer ---------- */
+  .mob-menu{
+    display:none;position:absolute;top:100%;left:0;right:0;z-index:38;
+    background:color-mix(in oklab,var(--bg) 97%,transparent);
+    backdrop-filter:blur(16px);border-bottom:1px solid var(--line);
+    flex-direction:column;
+  }
+  .mob-menu.open{display:flex}
+  .mob-menu a{
+    display:block;font-family:'JetBrains Mono',monospace;font-size:11px;letter-spacing:.16em;text-transform:uppercase;
+    color:var(--ink-dim);padding:16px 24px;border-bottom:1px solid var(--line);
+    text-decoration:none;transition:color .2s,background .2s;
+  }
+  .mob-menu a:hover{color:var(--mint);background:rgba(142,236,208,.04)}
+  .mob-menu-row{display:flex;align-items:center;gap:10px;padding:14px 24px;border-bottom:1px solid var(--line)}
+  .mob-menu-lbl{font-family:'JetBrains Mono',monospace;font-size:10px;letter-spacing:.16em;text-transform:uppercase;color:var(--ink-faint);flex:1}
+  .mob-dl{color:var(--mint)!important;display:flex;align-items:center;gap:10px;border-bottom:none!important}
+  .mob-dl::after{content:"→";font-size:14px}
   .pulse{width:7px;height:7px;border-radius:50%;background:var(--mint);box-shadow:0 0 0 0 rgba(142,236,208,.6);animation:pulse 1.6s infinite}
   @keyframes pulse{0%{box-shadow:0 0 0 0 rgba(142,236,208,.55)}70%{box-shadow:0 0 0 10px rgba(142,236,208,0)}100%{box-shadow:0 0 0 0 rgba(142,236,208,0)}}
-  .badge{display:inline-flex;align-items:center;gap:8px;padding:5px 9px;border:1px solid var(--line-2);border-radius:2px;font-size:10px;color:var(--ink)}
+  .badge{display:inline-flex;align-items:center;gap:6px;padding:4px 9px;border:1px solid var(--line-2);border-radius:2px;font-size:10px;color:var(--ink);white-space:nowrap;flex-shrink:0}
   .top a:hover{color:var(--mint)}
 
   /* ---------- Layout ---------- */
@@ -289,7 +323,7 @@
   }
   .themes-head h3 .mint{color:var(--mint)}
   .themes-head p{color:var(--ink-dim);font-size:15px;line-height:1.6;max-width:460px}
-  .theme-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:18px}
+  .theme-grid{display:grid;grid-template-columns:repeat(5,1fr);gap:18px}
   .theme{
     border:1px solid var(--line);border-radius:6px;
     background:var(--surface);
@@ -347,9 +381,32 @@
   .wave span{display:block;width:3px;background:var(--mint);border-radius:2px;animation:wave 1.2s ease-in-out infinite}
   @keyframes wave{0%,100%{height:6px;opacity:.4}50%{height:48px;opacity:1}}
 
+  /* ---------- Contact ---------- */
+  .contact-sect{padding:100px 0;border-top:1px solid var(--line);position:relative;overflow:hidden}
+  .contact-sect::before{content:"";position:absolute;inset:0;background:radial-gradient(700px 450px at 80% 50%,rgba(142,236,208,.07),transparent 60%);pointer-events:none}
+  .contact-inner{display:grid;grid-template-columns:1fr auto;gap:80px;align-items:center;margin-top:48px;position:relative}
+  .contact-body h2{font-family:'Instrument Serif',serif;font-style:italic;font-weight:400;font-size:clamp(40px,6vw,96px);line-height:.9;letter-spacing:-.02em;margin-bottom:24px}
+  .contact-body h2 .mint{color:var(--mint)}
+  .contact-body p{color:var(--ink-dim);max-width:480px;font-size:15px;line-height:1.65;margin-bottom:32px}
+  .contact-meta{display:flex;gap:12px;align-items:center;font-size:11px;color:var(--ink-faint);letter-spacing:.12em;margin-top:20px;flex-wrap:wrap}
+  .addr-card{border:1px solid var(--line);background:var(--surface);padding:36px 44px;display:flex;flex-direction:column;gap:14px;min-width:280px;transition:border-color .3s}
+  .addr-card:hover{border-color:var(--mint)}
+  .addr-label{font-family:'JetBrains Mono',monospace;font-size:10px;letter-spacing:.2em;text-transform:uppercase;color:var(--ink-faint)}
+  .addr-email{font-family:'Instrument Serif',serif;font-style:italic;font-size:28px;color:var(--mint);text-decoration:none;transition:opacity .2s;line-height:1.1}
+  .addr-email:hover{opacity:.75}
+  .addr-note{font-family:'JetBrains Mono',monospace;font-size:10px;color:var(--ink-faint);letter-spacing:.12em;text-transform:uppercase}
+
+  /* ---------- Language toggle ---------- */
+  .lang-btn{
+    background:none;border:1px solid var(--line);color:var(--ink-faint);
+    font-family:'JetBrains Mono',monospace;font-size:10px;letter-spacing:.14em;
+    padding:3px 8px;cursor:pointer;transition:border-color .2s,color .2s;line-height:1.2;
+  }
+  .lang-btn:hover,.lang-btn.lang-active{border-color:var(--mint);color:var(--mint)}
+
   /* ---------- Footer ---------- */
   footer{padding:48px 0 38px;border-top:1px solid var(--line);background:var(--bg-2)}
-  .foot{display:grid;grid-template-columns:1.5fr 1fr 1fr 1fr;gap:40px;align-items:start}
+  .foot{display:grid;grid-template-columns:1.5fr 1fr 1fr;gap:40px;align-items:start}
   .foot h4{font-family:'JetBrains Mono',monospace;font-size:11px;letter-spacing:.16em;text-transform:uppercase;color:var(--ink-faint);margin-bottom:18px}
   .foot ul{list-style:none;display:flex;flex-direction:column;gap:10px}
   .foot ul a{font-size:14px;color:var(--ink-dim);transition:color .2s}
@@ -468,6 +525,7 @@
   .toast.show{opacity:1;transform:translateY(0)}
 
   /* ---------- Responsive ---------- */
+  @media (max-width:1024px){
     .hero-grid{grid-template-columns:1fr;gap:40px}
     .phone-col{order:2}
     .quick{grid-template-columns:repeat(2,1fr)}
@@ -479,25 +537,41 @@
     .spot-grid{grid-template-columns:1fr 1fr;gap:18px}
     .spot:nth-child(3){display:none}
     .spot:nth-child(2){transform:none}
-    .theme-grid{grid-template-columns:repeat(2,1fr)}
+    .theme-grid{grid-template-columns:repeat(3,1fr)}
     .plat-grid{grid-template-columns:repeat(2,1fr)}
     .plat{border-right:1px solid var(--line);border-bottom:1px solid var(--line)}
     .foot{grid-template-columns:1fr 1fr;gap:30px}
     .anno{display:none}
     .manifesto-grid{grid-template-columns:1fr;gap:24px}
     .themes-head{grid-template-columns:1fr}
+    .contact-inner{grid-template-columns:1fr}
+    .addr-card{min-width:0}
+  }
+  @media (max-width:960px){
+    .top-inner{padding:10px 20px;gap:16px}
+    .top .left .dim{display:none}
+    .top .right > a:not(.badge){font-size:10px;letter-spacing:.08em}
+    .lang-group{gap:3px;padding-left:8px}
   }
   @media (max-width:680px){
-    .top-inner{grid-template-columns:auto 1fr;gap:12px}
-    .top .right{display:none}
+    .top-inner{display:flex;justify-content:space-between;align-items:center;padding:10px 18px;grid-template-columns:unset;gap:0}
+    .top .left,.top .right{display:none}
+    .top .center{flex:1;justify-content:flex-start}
+    .ham-btn{display:flex}
     .wrap{padding:0 18px}
     .spot-grid{grid-template-columns:1fr}
     .spot:nth-child(2){display:none}
     .plat-grid{grid-template-columns:1fr}
-    .theme-grid{grid-template-columns:1fr}
+    .theme-grid{grid-template-columns:repeat(2,1fr)}
     .foot{grid-template-columns:1fr}
+    .addr-card{padding:28px 24px}
     .quick{grid-template-columns:1fr}
     .quick > div{border-right:0;border-bottom:1px solid var(--line)}
+    .pre{overflow-x:auto;max-width:100%}
+    .manifest-head{display:none}
+    .feat .more-grid{grid-template-columns:1fr}
+    .feat.open .more{padding:18px 0 6px 0}
+    .manifesto-grid .right h2{font-size:clamp(32px,8vw,64px)}
   }
 </style>
 </head>
@@ -519,12 +593,34 @@
       <span style="color:var(--mint)">SIGNAL READER v1.0</span>
     </div>
     <div class="right mono uc">
-      <a href="#manifest">FEATURES</a>
-      <a href="#themes">THEMES</a>
-      <a href="#platforms">PLATFORMS</a>
+      <a href="#manifest" data-i18n="nav.features">FEATURES</a>
+      <a href="#themes" data-i18n="nav.themes">THEMES</a>
+      <a href="#platforms" data-i18n="nav.platforms">PLATFORMS</a>
+      <a href="#contact" data-i18n="nav.contact">CONTACT</a>
+      <div class="lang-group">
+        <button class="lang-btn lang-active" data-lang="en" type="button">EN</button>
+        <button class="lang-btn" data-lang="tr" type="button">TR</button>
+      </div>
       <a href="#download" class="badge"><span style="width:5px;height:5px;border-radius:50%;background:var(--mint);display:inline-block"></span>v1.0 / FREE</a>
     </div>
+    <button class="ham-btn" id="hamBtn" type="button" aria-label="Menu" aria-expanded="false">
+      <span></span><span></span><span></span>
+    </button>
   </div>
+
+  <!-- Mobile menu drawer -->
+  <nav class="mob-menu mono uc" id="mobMenu" aria-hidden="true">
+    <a href="#manifest" data-i18n="nav.features">FEATURES</a>
+    <a href="#themes" data-i18n="nav.themes">THEMES</a>
+    <a href="#platforms" data-i18n="nav.platforms">PLATFORMS</a>
+    <a href="#contact" data-i18n="nav.contact">CONTACT</a>
+    <div class="mob-menu-row">
+      <span class="mob-menu-lbl">Language</span>
+      <button class="lang-btn lang-active" data-lang="en" type="button">EN</button>
+      <button class="lang-btn" data-lang="tr" type="button">TR</button>
+    </div>
+    <a href="#download" class="mob-dl">v1.0 / FREE · Download</a>
+  </nav>
 </header>
 
 <!-- ============== HERO ============== -->
@@ -532,7 +628,7 @@
   <div class="wrap">
     <div class="section-tag">
       <span class="num mono">[ 00 ]</span>
-      <span class="ttl mono uc">Cold storage for warm news</span>
+      <span class="ttl mono uc" data-i18n="hero.tag">Cold storage for warm news</span>
       <span class="spacer"></span>
       <span class="meta mono uc">EST. 2026 / TR · OSS</span>
     </div>
@@ -542,30 +638,30 @@
       <div>
         <div class="eyebrow mono uc">
           <span class="bar"></span>
-          <span>Open broadcast</span>
+          <span data-i18n="hero.eyebrow1">Open broadcast</span>
           <span class="dim">·</span>
-          <span class="dim">No algorithm. No tracker. No noise.</span>
+          <span class="dim" data-i18n="hero.eyebrow2">No algorithm. No tracker. No noise.</span>
         </div>
 
-        <h1 class="title">
+        <h1 class="title" data-i18n-html="hero.h1">
           Tune in to <span class="mint">the open</span>
           <br/>web — <span class="stroke">again.</span>
         </h1>
 
-        <p class="sub">
+        <p class="sub" data-i18n-html="hero.sub">
           <b>Dondurma</b> is a beautifully crafted RSS &amp; Atom reader. It runs on every screen you own and answers only to you. No feed shuffling. No engagement traps. Just the channels you chose, in the order they aired.
         </p>
 
         <div class="cta-row">
           <a href="#download" class="btn btn-primary">
-            <span>Download v1.0</span>
+            <span data-i18n="hero.cta1">Download v1.0</span>
             <span class="ar">→</span>
           </a>
           <a href="#manifest" class="btn">
-            <span>What's inside</span>
+            <span data-i18n="hero.cta2">What's inside</span>
             <span class="ar">↓</span>
           </a>
-          <span class="mono" style="font-size:11px;color:var(--ink-faint);letter-spacing:.1em">
+          <span class="mono" data-i18n="hero.stat" style="font-size:11px;color:var(--ink-faint);letter-spacing:.1em">
             6 PLATFORMS · MIT LICENSE · 4.2 MB
           </span>
         </div>
@@ -578,8 +674,8 @@
           </div>
           <div>
             <div class="k">/&nbsp;THEMES</div>
-            <div class="v">09</div>
-            <div class="vm">CATPPUCCIN INSIDE</div>
+            <div class="v">10</div>
+            <div class="vm">FLEXCOLORSCHEME</div>
           </div>
           <div>
             <div class="k">/&nbsp;LANGUAGES</div>
@@ -604,9 +700,9 @@
               <img src="screenshots/folders-dark.png" alt="Folders" data-ch="02" data-name="Folders" />
               <img src="screenshots/bookmarks-dark.png" alt="Bookmarks" data-ch="03" data-name="Bookmarks" />
               <img src="screenshots/settings-dark.png" alt="Settings" data-ch="04" data-name="Settings" />
-              <img src="screenshots/feeds-light.png" alt="Feeds Light" data-ch="05" data-name="Feeds / Latte" />
-              <img src="screenshots/bookmarks-light.png" alt="Bookmarks Light" data-ch="06" data-name="Bookmarks / Latte" />
-              <img src="screenshots/settings-light.png" alt="Settings Light" data-ch="07" data-name="Settings / Latte" />
+              <img src="screenshots/feeds-light.png" alt="Feeds Light" data-ch="05" data-name="Feeds / Light" />
+              <img src="screenshots/bookmarks-light.png" alt="Bookmarks Light" data-ch="06" data-name="Bookmarks / Light" />
+              <img src="screenshots/settings-light.png" alt="Settings Light" data-ch="07" data-name="Settings / Light" />
               <img src="screenshots/onboarding.png" alt="Onboarding" data-ch="08" data-name="Onboarding / TR" />
               <div class="scan"></div>
             </div>
@@ -662,7 +758,7 @@
   <div class="wrap">
     <div class="section-tag">
       <span class="num mono">[ 01 ]</span>
-      <span class="ttl mono uc">Operating principle</span>
+      <span class="ttl mono uc" data-i18n="manifesto.tag">Operating principle</span>
       <span class="spacer"></span>
       <span class="meta mono uc">manifesto.txt · revised 04.26</span>
     </div>
@@ -679,7 +775,7 @@
  S I M P L E
  S Y N D I C A T E D
         </pre>
-        <p>
+        <p data-i18n="manifesto.p">
           RSS turned twenty-six. The web kept it, even when every big platform tried to bury it under timelines and recommendations.
           Dondurma is built for the people who refused to forget.
         </p>
@@ -687,21 +783,21 @@
       </div>
 
       <div class="right">
-        <h2>
+        <h2 data-i18n-html="manifesto.h2">
           A reader that <span class="strike">decides for you</span>.<br/>
           A reader that <span class="mint">waits for you</span><br/>
           to decide.
         </h2>
         <div style="display:grid;grid-template-columns:1fr 1fr;gap:36px;margin-top:42px">
           <div>
-            <div class="mono uc" style="font-size:11px;color:var(--coral);letter-spacing:.16em;margin-bottom:10px">— WE REFUSE</div>
-            <p style="font-size:14px;line-height:1.6;color:var(--ink-dim)">
+            <div class="mono uc" data-i18n="manifesto.refuse-label" style="font-size:11px;color:var(--coral);letter-spacing:.16em;margin-bottom:10px">— WE REFUSE</div>
+            <p data-i18n="manifesto.refuse-text" style="font-size:14px;line-height:1.6;color:var(--ink-dim)">
               Algorithmic ranking. Engagement metrics. Push notifications you didn't ask for. Newsletter spam in disguise. Telemetry. Dark patterns. Vendor lock-in.
             </p>
           </div>
           <div>
-            <div class="mono uc" style="font-size:11px;color:var(--mint);letter-spacing:.16em;margin-bottom:10px">+ WE KEEP</div>
-            <p style="font-size:14px;line-height:1.6;color:var(--ink-dim)">
+            <div class="mono uc" data-i18n="manifesto.keep-label" style="font-size:11px;color:var(--mint);letter-spacing:.16em;margin-bottom:10px">+ WE KEEP</div>
+            <p data-i18n="manifesto.keep-text" style="font-size:14px;line-height:1.6;color:var(--ink-dim)">
               Chronological order. Full-text extraction. Offline cache. OPML, your data, in &amp; out. Open source. A reading experience that respects the writer and the reader.
             </p>
           </div>
@@ -716,35 +812,35 @@
   <div class="wrap">
     <div class="section-tag">
       <span class="num mono">[ 02 ]</span>
-      <span class="ttl mono uc">Operator manifest</span>
+      <span class="ttl mono uc" data-i18n="manifest.tag">Operator manifest</span>
       <span class="spacer"></span>
-      <span class="meta mono uc">28 verified · 0 dependencies you didn't agree to</span>
+      <span class="meta mono uc" data-i18n="manifest.tag-meta">28 verified · 0 dependencies you didn't agree to</span>
     </div>
 
     <div style="display:flex;justify-content:space-between;align-items:end;margin:48px 0 24px;gap:30px;flex-wrap:wrap">
-      <h3 style="font-family:'Instrument Serif',serif;font-style:italic;font-size:clamp(48px,6vw,96px);line-height:.92;letter-spacing:-.02em;max-width:880px">
+      <h3 data-i18n-html="manifest.h3" style="font-family:'Instrument Serif',serif;font-style:italic;font-size:clamp(48px,6vw,96px);line-height:.92;letter-spacing:-.02em;max-width:880px">
         Everything you need.<br/>
         <span style="color:var(--mint)">Nothing</span> sneaking in.
       </h3>
-      <div class="mono uc" style="font-size:11px;color:var(--ink-faint);letter-spacing:.14em;max-width:260px;text-align:right">
+      <div class="mono uc" data-i18n-html="manifest.subtitle" style="font-size:11px;color:var(--ink-faint);letter-spacing:.14em;max-width:260px;text-align:right">
         Scroll the manifest →<br/>each row is a real feature shipping today
       </div>
     </div>
 
     <div class="manifest-head">
       <span>CH /</span>
-      <span>NAME</span>
-      <span>DESCRIPTION</span>
-      <span style="text-align:right">TAGS</span>
+      <span data-i18n="manifest.col-name">NAME</span>
+      <span data-i18n="manifest.col-desc">DESCRIPTION</span>
+      <span data-i18n="manifest.col-tags" style="text-align:right">TAGS</span>
     </div>
 
     <div class="feat" data-feat="01">
       <div class="id">CH·01</div>
-      <div class="name">Subscribe to anything that broadcasts</div>
-      <div class="desc">RSS 2.0 &amp; Atom out of the box. Paste a feed URL or a homepage — Dondurma sniffs out the channel for you. OPML import and export keep your library portable forever.</div>
+      <div class="name" data-i18n="f01.name">Subscribe to anything that broadcasts</div>
+      <div class="desc" data-i18n="f01.desc">RSS 2.0 &amp; Atom out of the box. Paste a feed URL or a homepage — Dondurma sniffs out the channel for you. OPML import and export keep your library portable forever.</div>
       <div class="tags"><span class="tag mint">RSS</span><span class="tag mint">ATOM</span><span class="tag">OPML</span></div>
       <span class="toggle">+</span>
-      <div class="more"><div class="more-grid">
+      <div class="more"><div class="more-grid" data-i18n-html="f01.more">
         <div><h5>Auto-discovery</h5>Paste <code>nytimes.com</code> — we'll find <code>/feed.xml</code> for you. Works on most blogs, news sites, podcasts, GitHub releases.</div>
         <div><h5>OPML</h5>Import from Feedly, Inoreader, NetNewsWire, NewsBlur, anything that exports the standard. Export anytime to leave with everything.</div>
         <div><h5>Channel limit</h5>None. The reader has been tested at <code>1,200+ feeds</code> per device without slowdown.</div>
@@ -753,11 +849,11 @@
 
     <div class="feat" data-feat="02">
       <div class="id">CH·02</div>
-      <div class="name">Folders &amp; categories, with personality</div>
-      <div class="desc">Group your channels into folders with custom emoji icons. Per-feed keyword filters quietly hide the topics you've outgrown — no shouting, just silence.</div>
+      <div class="name" data-i18n="f02.name">Folders &amp; categories, with personality</div>
+      <div class="desc" data-i18n="f02.desc">Group your channels into folders with custom emoji icons. Per-feed keyword filters quietly hide the topics you've outgrown — no shouting, just silence.</div>
       <div class="tags"><span class="tag">FOLDERS</span><span class="tag">EMOJI</span><span class="tag coral">FILTERS</span></div>
       <span class="toggle">+</span>
-      <div class="more"><div class="more-grid">
+      <div class="more"><div class="more-grid" data-i18n-html="f02.more">
         <div><h5>Nested groups</h5>One level of folders, on purpose. Two levels was a UX trap. Drag &amp; drop to re-order.</div>
         <div><h5>Keyword filter</h5>Block any article whose title contains <code>crypto</code>, <code>NFT</code>, <code>celebrity</code> — your call. Per-feed or global.</div>
         <div><h5>Icons</h5>Native emoji picker. Renders identically on every OS — finally.</div>
@@ -766,11 +862,11 @@
 
     <div class="feat" data-feat="03">
       <div class="id">CH·03</div>
-      <div class="name">A reading room built for actual reading</div>
-      <div class="desc">Full-screen article viewer with image carousels and PageView swipes between stories. Estimated reading time before you commit. Progress saved when you leave.</div>
+      <div class="name" data-i18n="f03.name">A reading room built for actual reading</div>
+      <div class="desc" data-i18n="f03.desc">Full-screen article viewer with image carousels and PageView swipes between stories. Estimated reading time before you commit. Progress saved when you leave.</div>
       <div class="tags"><span class="tag mint">READER</span><span class="tag">SWIPE</span><span class="tag">RESUME</span></div>
       <span class="toggle">+</span>
-      <div class="more"><div class="more-grid">
+      <div class="more"><div class="more-grid" data-i18n-html="f03.more">
         <div><h5>Carousels</h5>Multi-image posts get a horizontal swipe gallery, not a wall of stacked photos.</div>
         <div><h5>Resume</h5>Close the app at paragraph 14, come back to paragraph 14 — scroll position is per-article and survives device restarts.</div>
         <div><h5>Reading time</h5>Calculated from word count with a baseline of <code>238 wpm</code>. Shown before you tap in.</div>
@@ -779,11 +875,11 @@
 
     <div class="feat" data-feat="04">
       <div class="id">CH·04</div>
-      <div class="name">Full-text extraction, even from excerpt feeds</div>
-      <div class="desc">Sites that only publish teasers get unwrapped automatically. No more tapping out to a paywalled tab — the whole article opens inside the reader.</div>
+      <div class="name" data-i18n="f04.name">Full-text extraction, even from excerpt feeds</div>
+      <div class="desc" data-i18n="f04.desc">Sites that only publish teasers get unwrapped automatically. No more tapping out to a paywalled tab — the whole article opens inside the reader.</div>
       <div class="tags"><span class="tag mint">EXTRACTION</span><span class="tag">OFFLINE</span></div>
       <span class="toggle">+</span>
-      <div class="more"><div class="more-grid">
+      <div class="more"><div class="more-grid" data-i18n-html="f04.more">
         <div><h5>Engine</h5>Readability-style DOM extraction running on-device. No third-party server sees the URL you opened.</div>
         <div><h5>Fallback</h5>Sites that block extraction silently fall back to the in-app browser. Configurable per feed.</div>
         <div><h5>Cache</h5>Extracted bodies cached locally for fast re-reads &amp; offline.</div>
@@ -792,24 +888,24 @@
 
     <div class="feat" data-feat="05">
       <div class="id">CH·05</div>
-      <div class="name">Nine themes. Catppuccin included.</div>
-      <div class="desc">System, Light, Dark, four Catppuccin flavors — Latte, Frappé, Macchiato, Mocha — and two high-contrast modes for tired eyes. Outfit typography throughout.</div>
-      <div class="tags"><span class="tag mint">×9 THEMES</span><span class="tag">A11Y</span></div>
+      <div class="name" data-i18n="f05.name">Ten themes. FlexColorScheme powered.</div>
+      <div class="desc" data-i18n="f05.desc">Material, Blue, Indigo, Deep Purple, Sakura, Red, Teal, Green, Amber, and Outer Space — all powered by FlexColorScheme. Three brightness modes (System, Light, Dark) per scheme. Outfit typography throughout.</div>
+      <div class="tags"><span class="tag mint">×10 THEMES</span><span class="tag">MATERIAL 3</span></div>
       <span class="toggle">+</span>
-      <div class="more"><div class="more-grid">
+      <div class="more"><div class="more-grid" data-i18n-html="f05.more">
         <div><h5>Live preview</h5>Scroll down — tap a theme card. The site you're on right now re-skins to match the app.</div>
         <div><h5>System sync</h5>System theme follows iOS / Android / macOS appearance and time-of-day automatically.</div>
-        <div><h5>Contrast</h5>Two AAA-rated high-contrast presets verified against WCAG 2.2.</div>
+        <div><h5>Brightness</h5>Each of the 10 color schemes supports System, Light, and Dark modes — 30 total configurations.</div>
       </div></div>
     </div>
 
     <div class="feat" data-feat="06">
       <div class="id">CH·06</div>
-      <div class="name">A browser inside the reader</div>
-      <div class="desc">Tap a link, stay inside the app. Built-in WebView with EasyList + AdGuard ad blocking. Or kick it out to your system browser — your choice.</div>
+      <div class="name" data-i18n="f06.name">A browser inside the reader</div>
+      <div class="desc" data-i18n="f06.desc">Tap a link, stay inside the app. Built-in WebView with EasyList + AdGuard ad blocking. Or kick it out to your system browser — your choice.</div>
       <div class="tags"><span class="tag">WEBVIEW</span><span class="tag mint">AD-BLOCK</span></div>
       <span class="toggle">+</span>
-      <div class="more"><div class="more-grid">
+      <div class="more"><div class="more-grid" data-i18n-html="f06.more">
         <div><h5>Filter lists</h5><code>EasyList</code> + <code>AdGuard Base</code> applied on every navigation. Toggle per-session.</div>
         <div><h5>Dark mode bridge</h5>Force a dark stylesheet onto any article so you don't get flash-banged at 2am.</div>
         <div><h5>External</h5>Built-in / external Chrome / Safari / system default — pick once, change anytime.</div>
@@ -818,11 +914,11 @@
 
     <div class="feat" data-feat="07">
       <div class="id">CH·07</div>
-      <div class="name">Notifications that respect quiet hours</div>
-      <div class="desc">Get a buzz when something genuinely new lands. Digest mode batches the small stuff. A configurable quiet window means the reader sleeps when you do.</div>
+      <div class="name" data-i18n="f07.name">Notifications that respect quiet hours</div>
+      <div class="desc" data-i18n="f07.desc">Get a buzz when something genuinely new lands. Digest mode batches the small stuff. A configurable quiet window means the reader sleeps when you do.</div>
       <div class="tags"><span class="tag">DIGEST</span><span class="tag coral">QUIET</span></div>
       <span class="toggle">+</span>
-      <div class="more"><div class="more-grid">
+      <div class="more"><div class="more-grid" data-i18n-html="f07.more">
         <div><h5>Digest</h5>One bundled notification per N hours, instead of one buzz per article. Choose your N.</div>
         <div><h5>Quiet hours</h5>Pick a window like <code>22:00 → 08:00</code>. Notifications queue silently and deliver when you wake.</div>
         <div><h5>Tap to jump</h5>Tap a notification and land directly on the article — no list traversal.</div>
@@ -831,11 +927,11 @@
 
     <div class="feat" data-feat="08">
       <div class="id">CH·08</div>
-      <div class="name">Offline cache &amp; background sync</div>
-      <div class="desc">Articles stay readable on the subway, on the plane, anywhere. Background refresh on your schedule. Image cache and skeleton shimmers that mirror the real layout.</div>
+      <div class="name" data-i18n="f08.name">Offline cache &amp; background sync</div>
+      <div class="desc" data-i18n="f08.desc">Articles stay readable on the subway, on the plane, anywhere. Background refresh on your schedule. Image cache and skeleton shimmers that mirror the real layout.</div>
       <div class="tags"><span class="tag mint">OFFLINE</span><span class="tag">SYNC</span><span class="tag">CACHE</span></div>
       <span class="toggle">+</span>
-      <div class="more"><div class="more-grid">
+      <div class="more"><div class="more-grid" data-i18n-html="f08.more">
         <div><h5>Schedule</h5>Choose <code>15m / 1h / 6h / manual</code>. Background work respects OS battery rules.</div>
         <div><h5>Skeletons</h5>Loading states mirror the exact card layout — no jarring layout shifts when the real data lands.</div>
         <div><h5>Pagination</h5>Date-bucketed: <em>Today</em> · <em>Yesterday</em> · <em>Older</em>. Load-more on demand.</div>
@@ -844,11 +940,11 @@
 
     <div class="feat" data-feat="09">
       <div class="id">CH·09</div>
-      <div class="name">Swipe to bookmark, swipe to share</div>
-      <div class="desc">Left swipe saves an article for later. Right swipe toggles read state. Persistent search history brings back what you almost forgot.</div>
+      <div class="name" data-i18n="f09.name">Swipe to bookmark, swipe to share</div>
+      <div class="desc" data-i18n="f09.desc">Left swipe saves an article for later. Right swipe toggles read state. Persistent search history brings back what you almost forgot.</div>
       <div class="tags"><span class="tag">GESTURES</span><span class="tag mint">BOOKMARKS</span></div>
       <span class="toggle">+</span>
-      <div class="more"><div class="more-grid">
+      <div class="more"><div class="more-grid" data-i18n-html="f09.more">
         <div><h5>Gestures</h5>Left → bookmark. Right → read/unread toggle. Long-press → system share sheet.</div>
         <div><h5>Search</h5>Title + body full-text. Recent queries remembered. Tap to re-run.</div>
         <div><h5>Bookmarks tab</h5>A separate channel of its own, sortable by source or date.</div>
@@ -863,28 +959,28 @@
   <div class="wrap">
     <div class="section-tag">
       <span class="num mono">[ 03 ]</span>
-      <span class="ttl mono uc">Receiver gallery</span>
+      <span class="ttl mono uc" data-i18n="spot.tag">Receiver gallery</span>
       <span class="spacer"></span>
-      <span class="meta mono uc">three of nine modes shown</span>
+      <span class="meta mono uc" data-i18n="spot.tag-meta">three of ten modes shown</span>
     </div>
 
     <div class="spot-head" style="margin-top:40px">
-      <h3>The same signal,<br/><span style="color:var(--mint);font-style:italic">tuned for every mood.</span></h3>
-      <p>Every theme is hand-balanced for contrast, focus, and long reading sessions. Switch instantly. Your subscriptions don't notice; your eyes do.</p>
+      <h3 data-i18n-html="spot.h3">The same signal,<br/><span style="color:var(--mint);font-style:italic">tuned for every mood.</span></h3>
+      <p data-i18n="spot.p">Every theme is hand-balanced for contrast, focus, and long reading sessions. Switch instantly. Your subscriptions don't notice; your eyes do.</p>
     </div>
 
     <div class="spot-grid">
       <div class="spot">
         <div class="frame"><img src="screenshots/feeds-dark-2.png" alt="Dark theme feeds"/></div>
-        <div class="spot-cap"><span><span class="ch">CH·01</span> · DARK CLASSIC</span><span class="nm">Nightshift</span></div>
+        <div class="spot-cap"><span data-i18n-html="spot.cap1a-full"><span class="ch">CH·01</span> · DARK CLASSIC</span><span class="nm" data-i18n="spot.cap1b">Nightshift</span></div>
       </div>
       <div class="spot">
-        <div class="frame"><img src="screenshots/folders-light.png" alt="Light Latte theme folders"/></div>
-        <div class="spot-cap"><span><span class="ch">CH·02</span> · LATTE LIGHT</span><span class="nm">Daybreak</span></div>
+        <div class="frame"><img src="screenshots/folders-light.png" alt="Light mode folders"/></div>
+        <div class="spot-cap"><span data-i18n-html="spot.cap2a-full"><span class="ch">CH·02</span> · LIGHT MODE</span><span class="nm" data-i18n="spot.cap2b">Daybreak</span></div>
       </div>
       <div class="spot">
         <div class="frame"><img src="screenshots/settings-dark.png" alt="Settings screen"/></div>
-        <div class="spot-cap"><span><span class="ch">CH·03</span> · ENGINE ROOM</span><span class="nm">Cockpit</span></div>
+        <div class="spot-cap"><span data-i18n-html="spot.cap3a-full"><span class="ch">CH·03</span> · ENGINE ROOM</span><span class="nm" data-i18n="spot.cap3b">Cockpit</span></div>
       </div>
     </div>
   </div>
@@ -895,154 +991,171 @@
   <div class="wrap">
     <div class="section-tag">
       <span class="num mono">[ 04 ]</span>
-      <span class="ttl mono uc">Frequency presets</span>
+      <span class="ttl mono uc" data-i18n="themes.tag">Frequency presets</span>
       <span class="spacer"></span>
-      <span class="meta mono uc">9 / 9 shipped · catppuccin licensed</span>
+      <span class="meta mono uc">10 / 10 shipped · flexcolorscheme powered</span>
     </div>
 
     <div class="themes-head" style="margin-top:40px">
-      <h3>Nine ways<br/>to <span class="mint">read the air.</span></h3>
-      <p>System, Light, Dark, the four canonical Catppuccin flavors, and two high-contrast presets. Each switches the entire surface — chrome, cards, swipe indicators, even the ad-blocker toggle — in one tap.</p>
+      <h3 data-i18n-html="themes.h3">Ten ways<br/>to <span class="mint">read the air.</span></h3>
+      <p data-i18n="themes.p">Material, Blue, Indigo, Deep Purple, Sakura, Red, Teal, Green, Amber, and Outer Space — powered by FlexColorScheme. Each switches the entire surface in one tap. Three brightness modes per scheme.</p>
     </div>
 
     <div class="theme-grid" id="themeGrid">
-      <button class="theme" data-theme="latte" type="button">
+      <button class="theme" data-theme="material" type="button">
         <div class="scan-glow"></div>
-        <div class="swatch" style="background:linear-gradient(135deg,#dce0e8,#eff1f5)">
-          <div class="chip" style="background:#1e66f5"></div>
-          <div class="chip" style="background:#d20f39"></div>
-          <div class="chip" style="background:#40a02b"></div>
-          <div class="chip" style="background:#4c4f69"></div>
+        <div class="swatch" style="background:linear-gradient(135deg,#1c1b1f,#2b2930)">
+          <div class="chip" style="background:#d0bcff"></div>
+          <div class="chip" style="background:#ccc2dc"></div>
+          <div class="chip" style="background:#efb8c8"></div>
+          <div class="chip" style="background:#938f99"></div>
         </div>
         <div class="row">
           <div>
-            <div class="nm">Latte</div>
-            <div class="id">CAT · 01 / LIGHT</div>
+            <div class="nm">Material</div>
+            <div class="id">FCS · 01 / PURPLE</div>
           </div>
           <div class="check">○</div>
         </div>
       </button>
 
-      <button class="theme" data-theme="frappe" type="button">
+      <button class="theme" data-theme="blue" type="button">
         <div class="scan-glow"></div>
-        <div class="swatch" style="background:linear-gradient(135deg,#414559,#51576d)">
-          <div class="chip" style="background:#8caaee"></div>
-          <div class="chip" style="background:#f4b8e4"></div>
-          <div class="chip" style="background:#a6d189"></div>
-          <div class="chip" style="background:#c6d0f5"></div>
+        <div class="swatch" style="background:linear-gradient(135deg,#0a1628,#162544)">
+          <div class="chip" style="background:#90caf9"></div>
+          <div class="chip" style="background:#2196f3"></div>
+          <div class="chip" style="background:#64b5f6"></div>
+          <div class="chip" style="background:#1565c0"></div>
         </div>
         <div class="row">
           <div>
-            <div class="nm">Frappé</div>
-            <div class="id">CAT · 02 / WARM DARK</div>
+            <div class="nm">Blue</div>
+            <div class="id">FCS · 02 / BLUE</div>
           </div>
           <div class="check">○</div>
         </div>
       </button>
 
-      <button class="theme" data-theme="macchiato" type="button">
+      <button class="theme" data-theme="indigo" type="button">
         <div class="scan-glow"></div>
-        <div class="swatch" style="background:linear-gradient(135deg,#363a4f,#494d64)">
-          <div class="chip" style="background:#8aadf4"></div>
-          <div class="chip" style="background:#f5bde6"></div>
-          <div class="chip" style="background:#a6da95"></div>
-          <div class="chip" style="background:#cad3f5"></div>
+        <div class="swatch" style="background:linear-gradient(135deg,#0d0e20,#1a1b40)">
+          <div class="chip" style="background:#9fa8da"></div>
+          <div class="chip" style="background:#5c6bc0"></div>
+          <div class="chip" style="background:#c5cae9"></div>
+          <div class="chip" style="background:#3949ab"></div>
         </div>
         <div class="row">
           <div>
-            <div class="nm">Macchiato</div>
-            <div class="id">CAT · 03 / MID DARK</div>
+            <div class="nm">Indigo</div>
+            <div class="id">FCS · 03 / INDIGO</div>
           </div>
           <div class="check">○</div>
         </div>
       </button>
 
-      <button class="theme" data-theme="mocha" type="button">
+      <button class="theme" data-theme="deep-purple" type="button">
         <div class="scan-glow"></div>
-        <div class="swatch" style="background:linear-gradient(135deg,#1e1e2e,#313244)">
-          <div class="chip" style="background:#89b4fa"></div>
-          <div class="chip" style="background:#f5c2e7"></div>
-          <div class="chip" style="background:#a6e3a1"></div>
-          <div class="chip" style="background:#cdd6f4"></div>
+        <div class="swatch" style="background:linear-gradient(135deg,#0f0b1e,#1e1535)">
+          <div class="chip" style="background:#ce93d8"></div>
+          <div class="chip" style="background:#7c4dff"></div>
+          <div class="chip" style="background:#b39ddb"></div>
+          <div class="chip" style="background:#6200ea"></div>
         </div>
         <div class="row">
           <div>
-            <div class="nm">Mocha</div>
-            <div class="id">CAT · 04 / DEEP DARK</div>
+            <div class="nm">Deep Purple</div>
+            <div class="id">FCS · 04 / VIOLET</div>
           </div>
           <div class="check">○</div>
         </div>
       </button>
 
-      <button class="theme" data-theme="light" type="button">
+      <button class="theme" data-theme="sakura" type="button">
         <div class="scan-glow"></div>
-        <div class="swatch" style="background:linear-gradient(135deg,#ffffff,#f3f4f6)">
-          <div class="chip" style="background:#111"></div>
-          <div class="chip" style="background:#444"></div>
-          <div class="chip" style="background:#777"></div>
-          <div class="chip" style="background:#aaa"></div>
+        <div class="swatch" style="background:linear-gradient(135deg,#1a0811,#2e0f1f)">
+          <div class="chip" style="background:#f48fb1"></div>
+          <div class="chip" style="background:#e91e63"></div>
+          <div class="chip" style="background:#fce4ec"></div>
+          <div class="chip" style="background:#f06292"></div>
         </div>
         <div class="row">
           <div>
-            <div class="nm">Light</div>
-            <div class="id">SYS · 05 / DEFAULT</div>
+            <div class="nm">Sakura</div>
+            <div class="id">FCS · 05 / PINK</div>
           </div>
           <div class="check">○</div>
         </div>
       </button>
 
-      <button class="theme" data-theme="dark" type="button">
+      <button class="theme" data-theme="red" type="button">
         <div class="scan-glow"></div>
-        <div class="swatch" style="background:linear-gradient(135deg,#0a0a0a,#161616)">
-          <div class="chip" style="background:#eee"></div>
-          <div class="chip" style="background:#bbb"></div>
-          <div class="chip" style="background:#888"></div>
-          <div class="chip" style="background:#444"></div>
+        <div class="swatch" style="background:linear-gradient(135deg,#1a0505,#2e0a0a)">
+          <div class="chip" style="background:#ef9a9a"></div>
+          <div class="chip" style="background:#f44336"></div>
+          <div class="chip" style="background:#ffcdd2"></div>
+          <div class="chip" style="background:#d32f2f"></div>
         </div>
         <div class="row">
           <div>
-            <div class="nm">Dark</div>
-            <div class="id">SYS · 06 / CLASSIC</div>
+            <div class="nm">Red</div>
+            <div class="id">FCS · 06 / RED</div>
           </div>
           <div class="check">○</div>
         </div>
       </button>
 
-      <button class="theme" data-theme="hc-light" type="button">
+      <button class="theme" data-theme="teal" type="button">
         <div class="scan-glow"></div>
-        <div class="swatch" style="background:linear-gradient(135deg,#fff,#f5f5f5)">
-          <div class="chip" style="background:#000"></div>
-          <div class="chip" style="background:#ffd60a"></div>
-          <div class="chip" style="background:#000"></div>
-          <div class="chip" style="background:#ffd60a"></div>
+        <div class="swatch" style="background:linear-gradient(135deg,#041414,#0a2424)">
+          <div class="chip" style="background:#80cbc4"></div>
+          <div class="chip" style="background:#00897b"></div>
+          <div class="chip" style="background:#b2dfdb"></div>
+          <div class="chip" style="background:#004d40"></div>
         </div>
         <div class="row">
           <div>
-            <div class="nm">HC&nbsp;Light</div>
-            <div class="id">A11Y · 07 / HIGH-CONTRAST</div>
+            <div class="nm">Teal</div>
+            <div class="id">FCS · 07 / TEAL</div>
           </div>
           <div class="check">○</div>
         </div>
       </button>
 
-      <button class="theme" data-theme="hc-dark" type="button">
+      <button class="theme" data-theme="green" type="button">
         <div class="scan-glow"></div>
-        <div class="swatch" style="background:linear-gradient(135deg,#000,#0a0a0a)">
-          <div class="chip" style="background:#fff"></div>
-          <div class="chip" style="background:#ffd60a"></div>
-          <div class="chip" style="background:#00f5a0"></div>
-          <div class="chip" style="background:#fff"></div>
+        <div class="swatch" style="background:linear-gradient(135deg,#061606,#0d2410)">
+          <div class="chip" style="background:#a5d6a7"></div>
+          <div class="chip" style="background:#43a047"></div>
+          <div class="chip" style="background:#c8e6c9"></div>
+          <div class="chip" style="background:#1b5e20"></div>
         </div>
         <div class="row">
           <div>
-            <div class="nm">HC&nbsp;Dark</div>
-            <div class="id">A11Y · 08 / HIGH-CONTRAST</div>
+            <div class="nm">Green</div>
+            <div class="id">FCS · 08 / GREEN</div>
           </div>
           <div class="check">○</div>
         </div>
       </button>
 
-      <button class="theme active" data-theme="signal" type="button">
+      <button class="theme" data-theme="amber" type="button">
+        <div class="scan-glow"></div>
+        <div class="swatch" style="background:linear-gradient(135deg,#1a1200,#2e2000)">
+          <div class="chip" style="background:#ffd54f"></div>
+          <div class="chip" style="background:#ffb300"></div>
+          <div class="chip" style="background:#ffecb3"></div>
+          <div class="chip" style="background:#ff6f00"></div>
+        </div>
+        <div class="row">
+          <div>
+            <div class="nm">Amber</div>
+            <div class="id">FCS · 09 / AMBER</div>
+          </div>
+          <div class="check">○</div>
+        </div>
+      </button>
+
+      <button class="theme active" data-theme="outer-space" type="button">
         <div class="scan-glow"></div>
         <div class="swatch" style="background:linear-gradient(135deg,#0a0d0c,#161e22)">
           <div class="chip" style="background:#8eecd0"></div>
@@ -1052,8 +1165,8 @@
         </div>
         <div class="row">
           <div>
-            <div class="nm">Signal</div>
-            <div class="id">SYS · 09 / DEFAULT</div>
+            <div class="nm">Outer Space</div>
+            <div class="id">FCS · 10 / DEFAULT</div>
           </div>
           <div class="check">● ACTIVE</div>
         </div>
@@ -1067,14 +1180,14 @@
   <div class="wrap">
     <div class="section-tag">
       <span class="num mono">[ 05 ]</span>
-      <span class="ttl mono uc">Broadcasting on</span>
+      <span class="ttl mono uc" data-i18n="plat.tag">Broadcasting on</span>
       <span class="spacer"></span>
-      <span class="meta mono uc">one codebase · six receivers</span>
+      <span class="meta mono uc" data-i18n="plat.tag-meta">one codebase · six receivers</span>
     </div>
 
     <div class="plat-head" style="margin-top:40px">
-      <h3>Built once.<br/><span style="color:var(--mint);font-style:italic">Tunes in everywhere.</span></h3>
-      <div class="mono uc" style="font-size:11px;color:var(--ink-faint);letter-spacing:.14em;max-width:300px">
+      <h3 data-i18n-html="plat.h3">Built once.<br/><span style="color:var(--mint);font-style:italic">Tunes in everywhere.</span></h3>
+      <div class="mono uc" data-i18n-html="plat.sub" style="font-size:11px;color:var(--ink-faint);letter-spacing:.14em;max-width:300px">
         Powered by Flutter &amp; Material 3.<br/>
         Same feeds, same bookmarks, same theme — wherever you read.
       </div>
@@ -1152,14 +1265,14 @@
       <span class="pulse"></span> NOW BROADCASTING / VERSION 1.0 / GO-LIVE
     </div>
 
-    <h2>
+    <h2 data-i18n-html="bcast.h2">
       Step away from <span class="strike-out">the feed</span>.<br/>
       Step into <span class="mint">your feeds.</span>
     </h2>
 
-    <p>
+    <p data-i18n="bcast.p">
       Free. Open source. Yours to fork, your data to keep.
-      Available on every device you own, today.
+      Available on iOS and Android — other platforms via GitHub.
     </p>
 
     <div class="wave">
@@ -1185,9 +1298,49 @@
     </div>
 
     <div class="cta-row" style="justify-content:center">
-      <a href="#" class="btn btn-primary"><span>Download for iOS</span><span class="ar">→</span></a>
-      <a href="#" class="btn"><span>Android · Web · Desktop</span><span class="ar">→</span></a>
-      <a href="#" class="btn"><span>View Source</span><span class="ar">↗</span></a>
+      <a href="#" class="btn btn-primary"><span data-i18n="bcast.cta1">Download for iOS</span><span class="ar">→</span></a>
+      <a href="#" class="btn"><span data-i18n="bcast.cta2">Get on Android</span><span class="ar">→</span></a>
+      <a href="https://github.com/DevOpen-io/dondurma-rss-reader" target="_blank" rel="noopener" class="btn"><span data-i18n="bcast.cta3">Other platforms · GitHub</span><span class="ar">↗</span></a>
+    </div>
+  </div>
+</section>
+
+<!-- ============== CONTACT ============== -->
+<section class="contact-sect" id="contact">
+  <div class="wrap">
+    <div class="section-tag">
+      <span class="num mono">[ 06 ]</span>
+      <span class="ttl mono uc" data-i18n="contact.tag">Get in touch</span>
+      <span class="spacer"></span>
+      <span class="meta mono uc">info@devopen.io · DevOpen · İstanbul</span>
+    </div>
+
+    <div class="contact-inner">
+      <div class="contact-body">
+        <h2 data-i18n-html="contact.h2">We read every<br/><span class="mint">message.</span></h2>
+        <p data-i18n="contact.p">Bug reports, feature ideas, partnership inquiries, privacy questions, or just saying hi — every message lands in the same inbox and gets a human reply. We aim to respond within 24–48 hours.</p>
+        <div class="cta-row">
+          <a href="mailto:info@devopen.io" class="btn btn-primary"><span data-i18n="contact.cta1">Send a message</span><span class="ar">↗</span></a>
+          <a href="https://devopen-io.github.io/dondurma-rss-reader/privacy-policy.html" target="_blank" rel="noopener" class="btn"><span data-i18n="contact.cta2">Privacy Policy</span><span class="ar">↗</span></a>
+        </div>
+        <div class="contact-meta mono uc">
+          <span data-i18n="contact.meta1">Response · 24–48 h</span>
+          <span class="dim">·</span>
+          <span data-i18n="contact.meta2">Human replies only</span>
+          <span class="dim">·</span>
+          <span data-i18n="contact.meta3">MIT licensed</span>
+        </div>
+      </div>
+
+      <div>
+        <div class="addr-card">
+          <div class="addr-label" data-i18n="contact.addr-label">Direct line</div>
+          <a href="mailto:info@devopen.io" class="addr-email">info@devopen.io</a>
+          <div class="addr-note" data-i18n="contact.addr-note1">DevOpen · Dondurma RSS Reader</div>
+          <div style="height:1px;background:var(--line);margin:8px 0"></div>
+          <div class="addr-note" data-i18n="contact.addr-note2">No trackers · No ads · Open source</div>
+        </div>
+      </div>
     </div>
   </div>
 </section>
@@ -1198,43 +1351,30 @@
     <div class="foot">
       <div class="brand">
         <div class="lg">Dondurma<span class="mint">.</span></div>
-        <p>An RSS reader from Türkiye 🇹🇷, named after ice cream. Cold storage for warm news. Built with Flutter &amp; Material 3, licensed MIT, run by humans.</p>
+        <p data-i18n="foot.brand">An RSS reader from Türkiye 🇹🇷, named after ice cream. Cold storage for warm news. Built with Flutter &amp; Material 3, licensed MIT, run by humans.</p>
       </div>
       <div>
-        <h4>Receiver</h4>
+        <h4 data-i18n="foot.col1">Download</h4>
         <ul>
-          <li><a href="#">iOS · App Store</a></li>
-          <li><a href="#">Android · Play / F-Droid</a></li>
-          <li><a href="#">macOS · DMG</a></li>
-          <li><a href="#">Windows · MSIX</a></li>
-          <li><a href="#">Linux · AppImage</a></li>
-          <li><a href="#">Web · PWA</a></li>
+          <li><a href="#" data-i18n="foot.dl-ios">iOS · App Store</a></li>
+          <li><a href="#" data-i18n="foot.dl-android">Android · Google Play</a></li>
+          <li><a href="https://github.com/DevOpen-io/dondurma-rss-reader" target="_blank" rel="noopener" data-i18n="foot.dl-other">Other platforms · GitHub</a></li>
         </ul>
       </div>
       <div>
-        <h4>Channel</h4>
+        <h4 data-i18n="foot.col2">Links</h4>
         <ul>
-          <li><a href="#">Source · GitHub</a></li>
-          <li><a href="#">Changelog</a></li>
-          <li><a href="#">Roadmap</a></li>
-          <li><a href="#">OPML &amp; import guide</a></li>
-          <li><a href="#">Translations · ARB</a></li>
-        </ul>
-      </div>
-      <div>
-        <h4>Static</h4>
-        <ul>
-          <li><a href="#">Press kit</a></li>
-          <li><a href="#">License · MIT</a></li>
-          <li><a href="#">Privacy · n/a</a></li>
-          <li><a href="mailto:info@devopen.io">Contact · info@devopen.io</a></li>
+          <li><a href="https://github.com/DevOpen-io/dondurma-rss-reader" target="_blank" rel="noopener" data-i18n="foot.link-source">Source · GitHub</a></li>
+          <li><a href="https://devopen-io.github.io/dondurma-rss-reader/privacy-policy.html" target="_blank" rel="noopener" data-i18n="foot.link-privacy">Privacy Policy</a></li>
+          <li><a href="mailto:info@devopen.io" data-i18n="foot.link-contact">Contact us</a></li>
+          <li><a href="#contact" data-i18n="foot.link-touch">Get in touch</a></li>
         </ul>
       </div>
     </div>
 
     <div class="foot-base">
-      <span>© 2026 · DONDURMA / SIGNAL READER · MIT</span>
-      <span>NO ALGORITHM. NO TRACKER. NO COOKIES ON THIS PAGE EITHER.</span>
+      <span>© 2026 · DONDURMA · DEVOPEN · MIT</span>
+      <span data-i18n="foot.base1">NO ALGORITHM. NO TRACKER. NO COOKIES ON THIS PAGE EITHER.</span>
       <span>BUILT IN İSTANBUL · LAT 41.0082 / LON 28.9784</span>
     </div>
   </div>
@@ -1257,17 +1397,18 @@
   // ============ THEMES ============
   // Each theme defines the full palette and a body-gradient hint
   const THEMES = {
-    'signal':    { bg:'#07090a', bg2:'#0c1011', surface:'#11171a', surface2:'#161e22', line:'#1f2a2e', line2:'#2a3a40', ink:'#e8efe9', inkDim:'#97a3a0', inkFaint:'#56635f', mint:'#8eecd0', coral:'#ff9b7a', amber:'#ffd27a', label:'SIGNAL · DEFAULT' },
-    'mocha':     { bg:'#11111b', bg2:'#181825', surface:'#1e1e2e', surface2:'#313244', line:'#313244', line2:'#45475a', ink:'#cdd6f4', inkDim:'#a6adc8', inkFaint:'#6c7086', mint:'#a6e3a1', coral:'#fab387', amber:'#f9e2af', label:'CATPPUCCIN · MOCHA' },
-    'macchiato': { bg:'#181926', bg2:'#1e2030', surface:'#24273a', surface2:'#363a4f', line:'#363a4f', line2:'#494d64', ink:'#cad3f5', inkDim:'#a5adcb', inkFaint:'#6e738d', mint:'#a6da95', coral:'#f5a97f', amber:'#eed49f', label:'CATPPUCCIN · MACCHIATO' },
-    'frappe':    { bg:'#232634', bg2:'#292c3c', surface:'#303446', surface2:'#414559', line:'#414559', line2:'#51576d', ink:'#c6d0f5', inkDim:'#a5adce', inkFaint:'#737994', mint:'#a6d189', coral:'#ef9f76', amber:'#e5c890', label:'CATPPUCCIN · FRAPPÉ' },
-    'latte':     { bg:'#eff1f5', bg2:'#e6e9ef', surface:'#dce0e8', surface2:'#ccd0da', line:'#bcc0cc', line2:'#acb0be', ink:'#4c4f69', inkDim:'#6c6f85', inkFaint:'#9ca0b0', mint:'#40a02b', coral:'#fe640b', amber:'#df8e1d', label:'CATPPUCCIN · LATTE' },
-    'light':     { bg:'#fafafa', bg2:'#f4f4f4', surface:'#ffffff', surface2:'#eeeeee', line:'#e2e2e2', line2:'#cccccc', ink:'#0a0a0a', inkDim:'#555555', inkFaint:'#999999', mint:'#0e7c66', coral:'#c84a1c', amber:'#9a6b00', label:'SYSTEM · LIGHT' },
-    'dark':      { bg:'#0a0a0a', bg2:'#111111', surface:'#161616', surface2:'#1f1f1f', line:'#262626', line2:'#3a3a3a', ink:'#f5f5f5', inkDim:'#a3a3a3', inkFaint:'#666666', mint:'#3ddc97', coral:'#ff7b54', amber:'#ffc94d', label:'SYSTEM · DARK' },
-    'hc-light':  { bg:'#ffffff', bg2:'#f5f5f5', surface:'#ffffff', surface2:'#f0f0f0', line:'#000000', line2:'#000000', ink:'#000000', inkDim:'#000000', inkFaint:'#444444', mint:'#0050ff', coral:'#d8000c', amber:'#a76b00', label:'A11Y · HC LIGHT' },
-    'hc-dark':   { bg:'#000000', bg2:'#050505', surface:'#0a0a0a', surface2:'#141414', line:'#ffffff', line2:'#ffffff', ink:'#ffffff', inkDim:'#ffffff', inkFaint:'#bbbbbb', mint:'#00f5a0', coral:'#ffd60a', amber:'#ffd60a', label:'A11Y · HC DARK' },
+    'outer-space': { bg:'#07090a', bg2:'#0c1011', surface:'#11171a', surface2:'#161e22', line:'#1f2a2e', line2:'#2a3a40', ink:'#e8efe9', inkDim:'#97a3a0', inkFaint:'#56635f', mint:'#8eecd0', coral:'#ff9b7a', amber:'#ffd27a', label:'OUTER SPACE · DEFAULT' },
+    'material':    { bg:'#1c1b1f', bg2:'#211f26', surface:'#2b2930', surface2:'#36343b', line:'#48464c', line2:'#5c5a60', ink:'#e6e1e5', inkDim:'#cac4d0', inkFaint:'#938f99', mint:'#d0bcff', coral:'#f2b8b5', amber:'#efb8c8', label:'MATERIAL · PURPLE' },
+    'blue':        { bg:'#0a1628', bg2:'#0f1e38', surface:'#162544', surface2:'#1e2f54', line:'#2a3d66', line2:'#3a5280', ink:'#d6e4ff', inkDim:'#a8c8ff', inkFaint:'#6b90c8', mint:'#90caf9', coral:'#f48fb1', amber:'#fff176', label:'BLUE · MATERIAL' },
+    'indigo':      { bg:'#0d0e20', bg2:'#131430', surface:'#1a1b40', surface2:'#22234f', line:'#32356a', line2:'#44488a', ink:'#c5cae9', inkDim:'#9fa8da', inkFaint:'#7986cb', mint:'#9fa8da', coral:'#f48fb1', amber:'#fff176', label:'INDIGO · MATERIAL' },
+    'deep-purple': { bg:'#0f0b1e', bg2:'#160f2a', surface:'#1e1535', surface2:'#281e45', line:'#3a2a60', line2:'#4e3880', ink:'#e1bee7', inkDim:'#ce93d8', inkFaint:'#ab47bc', mint:'#ce93d8', coral:'#ef9a9a', amber:'#fff176', label:'DEEP PURPLE · MATERIAL' },
+    'sakura':      { bg:'#1a0811', bg2:'#260c1a', surface:'#331024', surface2:'#42152e', line:'#5a1f40', line2:'#782852', ink:'#fce4ec', inkDim:'#f48fb1', inkFaint:'#f06292', mint:'#f48fb1', coral:'#ef9a9a', amber:'#fff9c4', label:'SAKURA · PINK' },
+    'red':         { bg:'#1a0505', bg2:'#240808', surface:'#2e0a0a', surface2:'#3e1010', line:'#5a1515', line2:'#7a2020', ink:'#ffcdd2', inkDim:'#ef9a9a', inkFaint:'#e57373', mint:'#ef9a9a', coral:'#ef5350', amber:'#fff176', label:'RED · MATERIAL' },
+    'teal':        { bg:'#041414', bg2:'#061c1c', surface:'#092424', surface2:'#0e2e2e', line:'#1a4040', line2:'#245555', ink:'#b2dfdb', inkDim:'#80cbc4', inkFaint:'#4db6ac', mint:'#80cbc4', coral:'#ffab91', amber:'#fff176', label:'TEAL · MATERIAL' },
+    'green':       { bg:'#061606', bg2:'#0a2008', surface:'#0f2c0e', surface2:'#163a14', line:'#244e22', line2:'#326630', ink:'#c8e6c9', inkDim:'#a5d6a7', inkFaint:'#81c784', mint:'#a5d6a7', coral:'#ffab91', amber:'#fff176', label:'GREEN · MATERIAL' },
+    'amber':       { bg:'#1a1200', bg2:'#241a00', surface:'#2e2200', surface2:'#3e2e00', line:'#5a4400', line2:'#7a5c00', ink:'#fff8e1', inkDim:'#ffd54f', inkFaint:'#ffca28', mint:'#ffd54f', coral:'#ff8a65', amber:'#ffd740', label:'AMBER · MATERIAL' },
   };
-  const THEME_ORDER = ['signal','mocha','macchiato','frappe','latte','light','dark','hc-light','hc-dark'];
+  const THEME_ORDER = ['outer-space','material','blue','indigo','deep-purple','sakura','red','teal','green','amber'];
 
   function applyTheme(name){
     const t = THEMES[name];
@@ -1291,7 +1432,7 @@
       const on = b.dataset.theme === name;
       b.classList.toggle('active', on);
       const chk = b.querySelector('.check');
-      if(chk) chk.textContent = on ? '● ACTIVE' : '○';
+      if(chk) chk.textContent = on ? '● ' + (window.__langActive || 'ACTIVE') : '○';
     });
     // toast
     const tt = document.getElementById('toast');
@@ -1313,7 +1454,7 @@
   // restore
   try{
     const saved = localStorage.getItem('dondurma:theme');
-    if(saved && THEMES[saved] && saved !== 'signal') applyTheme(saved);
+    if(saved && THEMES[saved] && saved !== 'outer-space') applyTheme(saved);
   }catch(_){}
 
   // ============ CHANNEL TUNER ============
@@ -1398,6 +1539,226 @@
   document.getElementById('kbhintX')?.addEventListener('click', () => {
     kbhint.classList.remove('show');
     try{ localStorage.setItem('dondurma:kbhint','0'); }catch(_){}
+  });
+
+  // ============ I18N ============
+  const I18N = {
+    en: {
+      'nav.features':'FEATURES','nav.themes':'THEMES','nav.platforms':'PLATFORMS','nav.contact':'CONTACT',
+      'hero.tag':'Cold storage for warm news',
+      'hero.eyebrow1':'Open broadcast',
+      'hero.eyebrow2':'No algorithm. No tracker. No noise.',
+      'hero.h1':'Tune in to <span class="mint">the open</span><br/>web — <span class="stroke">again.</span>',
+      'hero.sub':'<b>Dondurma</b> is a beautifully crafted RSS &amp; Atom reader. It runs on every screen you own and answers only to you. No feed shuffling. No engagement traps. Just the channels you chose, in the order they aired.',
+      'hero.cta1':'Download v1.0','hero.cta2':"What’s inside",
+      'hero.stat':'6 PLATFORMS · MIT LICENSE · 4.2 MB',
+      'manifesto.tag':'Operating principle',
+      'manifesto.p':'RSS turned twenty-six. The web kept it, even when every big platform tried to bury it under timelines and recommendations. Dondurma is built for the people who refused to forget.',
+      'manifesto.refuse-label':'— WE REFUSE','manifesto.keep-label':'+ WE KEEP',
+      'manifesto.refuse-text':"Algorithmic ranking. Engagement metrics. Push notifications you didn’t ask for. Newsletter spam in disguise. Telemetry. Dark patterns. Vendor lock-in.",
+      'manifesto.keep-text':'Chronological order. Full-text extraction. Offline cache. OPML, your data, in & out. Open source. A reading experience that respects the writer and the reader.',
+      'manifesto.h2':'A reader that <span class="strike">decides for you</span>.<br/>A reader that <span class="mint">waits for you</span><br/>to decide.',
+      'manifest.tag':'Operator manifest',
+      'manifest.tag-meta':"28 verified · 0 dependencies you didn’t agree to",
+      'manifest.h3':'Everything you need.<br/><span style="color:var(--mint)">Nothing</span> sneaking in.',
+      'manifest.subtitle':'Scroll the manifest →<br/>each row is a real feature shipping today',
+      'manifest.col-name':'NAME','manifest.col-desc':'DESCRIPTION','manifest.col-tags':'TAGS',
+      'f01.name':'Subscribe to anything that broadcasts',
+      'f01.desc':'RSS 2.0 & Atom out of the box. Paste a feed URL or a homepage — Dondurma sniffs out the channel for you. OPML import and export keep your library portable forever.',
+      'f01.more':'<div><h5>Auto-discovery</h5>Paste <code>nytimes.com</code> — we’ll find <code>/feed.xml</code> for you. Works on most blogs, news sites, podcasts, GitHub releases.</div><div><h5>OPML</h5>Import from Feedly, Inoreader, NetNewsWire, NewsBlur, anything that exports the standard. Export anytime to leave with everything.</div><div><h5>Channel limit</h5>None. The reader has been tested at <code>1,200+ feeds</code> per device without slowdown.</div>',
+      'f02.name':'Folders & categories, with personality',
+      'f02.desc':"Group your channels into folders with custom emoji icons. Per-feed keyword filters quietly hide the topics you’ve outgrown — no shouting, just silence.",
+      'f02.more':'<div><h5>Nested groups</h5>One level of folders, on purpose. Two levels was a UX trap. Drag &amp; drop to re-order.</div><div><h5>Keyword filter</h5>Block any article whose title contains <code>crypto</code>, <code>NFT</code>, <code>celebrity</code> — your call. Per-feed or global.</div><div><h5>Icons</h5>Native emoji picker. Renders identically on every OS — finally.</div>',
+      'f03.name':'A reading room built for actual reading',
+      'f03.desc':'Full-screen article viewer with image carousels and PageView swipes between stories. Estimated reading time before you commit. Progress saved when you leave.',
+      'f03.more':'<div><h5>Carousels</h5>Multi-image posts get a horizontal swipe gallery, not a wall of stacked photos.</div><div><h5>Resume</h5>Close the app at paragraph 14, come back to paragraph 14 — scroll position is per-article and survives device restarts.</div><div><h5>Reading time</h5>Calculated from word count with a baseline of <code>238 wpm</code>. Shown before you tap in.</div>',
+      'f04.name':'Full-text extraction, even from excerpt feeds',
+      'f04.desc':'Sites that only publish teasers get unwrapped automatically. No more tapping out to a paywalled tab — the whole article opens inside the reader.',
+      'f04.more':'<div><h5>Engine</h5>Readability-style DOM extraction running on-device. No third-party server sees the URL you opened.</div><div><h5>Fallback</h5>Sites that block extraction silently fall back to the in-app browser. Configurable per feed.</div><div><h5>Cache</h5>Extracted bodies cached locally for fast re-reads &amp; offline.</div>',
+      'f05.name':'Ten themes. FlexColorScheme powered.',
+      'f05.desc':'Material, Blue, Indigo, Deep Purple, Sakura, Red, Teal, Green, Amber, and Outer Space — all powered by FlexColorScheme. Three brightness modes (System, Light, Dark) per scheme. Outfit typography throughout.',
+      'f05.more':"<div><h5>Live preview</h5>Scroll down — tap a theme card. The site you’re on right now re-skins to match the app.</div><div><h5>System sync</h5>System theme follows iOS / Android / macOS appearance and time-of-day automatically.</div><div><h5>Brightness</h5>Each of the 10 color schemes supports System, Light, and Dark modes — 30 total configurations.</div>",
+      'f06.name':'A browser inside the reader',
+      'f06.desc':"Tap a link, stay inside the app. Built-in WebView with EasyList + AdGuard ad blocking. Or kick it out to your system browser — your choice.",
+      'f06.more':'<div><h5>Filter lists</h5><code>EasyList</code> + <code>AdGuard Base</code> applied on every navigation. Toggle per-session.</div><div><h5>Dark mode bridge</h5>Force a dark stylesheet onto any article so you don’t get flash-banged at 2am.</div><div><h5>External</h5>Built-in / external Chrome / Safari / system default — pick once, change anytime.</div>',
+      'f07.name':'Notifications that respect quiet hours',
+      'f07.desc':'Get a buzz when something genuinely new lands. Digest mode batches the small stuff. A configurable quiet window means the reader sleeps when you do.',
+      'f07.more':'<div><h5>Digest</h5>One bundled notification per N hours, instead of one buzz per article. Choose your N.</div><div><h5>Quiet hours</h5>Pick a window like <code>22:00 → 08:00</code>. Notifications queue silently and deliver when you wake.</div><div><h5>Tap to jump</h5>Tap a notification and land directly on the article — no list traversal.</div>',
+      'f08.name':'Offline cache & background sync',
+      'f08.desc':'Articles stay readable on the subway, on the plane, anywhere. Background refresh on your schedule. Image cache and skeleton shimmers that mirror the real layout.',
+      'f08.more':'<div><h5>Schedule</h5>Choose <code>15m / 1h / 6h / manual</code>. Background work respects OS battery rules.</div><div><h5>Skeletons</h5>Loading states mirror the exact card layout — no jarring layout shifts when the real data lands.</div><div><h5>Pagination</h5>Date-bucketed: <em>Today</em> · <em>Yesterday</em> · <em>Older</em>. Load-more on demand.</div>',
+      'f09.name':'Swipe to bookmark, swipe to share',
+      'f09.desc':'Left swipe saves an article for later. Right swipe toggles read state. Persistent search history brings back what you almost forgot.',
+      'f09.more':'<div><h5>Gestures</h5>Left → bookmark. Right → read/unread toggle. Long-press → system share sheet.</div><div><h5>Search</h5>Title + body full-text. Recent queries remembered. Tap to re-run.</div><div><h5>Bookmarks tab</h5>A separate channel of its own, sortable by source or date.</div>',
+      'spot.tag':'Receiver gallery','spot.tag-meta':'three of ten modes shown',
+      'spot.h3':'The same signal,<br/><span style="color:var(--mint);font-style:italic">tuned for every mood.</span>',
+      'spot.p':"Every theme is hand-balanced for contrast, focus, and long reading sessions. Switch instantly. Your subscriptions don’t notice; your eyes do.",
+      'spot.cap1a-full':'<span class="ch">CH·01</span> · DARK CLASSIC','spot.cap1b':'Nightshift',
+      'spot.cap2a-full':'<span class="ch">CH·02</span> · LIGHT MODE','spot.cap2b':'Daybreak',
+      'spot.cap3a-full':'<span class="ch">CH·03</span> · ENGINE ROOM','spot.cap3b':'Cockpit',
+      'themes.tag':'Frequency presets',
+      'themes.h3':'Ten ways<br/>to <span class="mint">read the air.</span>',
+      'themes.p':'Material, Blue, Indigo, Deep Purple, Sakura, Red, Teal, Green, Amber, and Outer Space — powered by FlexColorScheme. Each switches the entire surface in one tap. Three brightness modes per scheme.',
+      'plat.tag':'Broadcasting on','plat.tag-meta':'one codebase · six receivers',
+      'plat.h3':'Built once.<br/><span style="color:var(--mint);font-style:italic">Tunes in everywhere.</span>',
+      'plat.sub':'Powered by Flutter &amp; Material 3.<br/>Same feeds, same bookmarks, same theme — wherever you read.',
+      'bcast.h2':'Step away from <span class="strike-out">the feed</span>.<br/>Step into <span class="mint">your feeds.</span>',
+      'bcast.p':'Free. Open source. Yours to fork, your data to keep. Available on iOS and Android — other platforms via GitHub.',
+      'bcast.cta1':'Download for iOS','bcast.cta2':'Get on Android','bcast.cta3':'Other platforms · GitHub',
+      'contact.tag':'Get in touch',
+      'contact.h2':'We read every<br/><span class="mint">message.</span>',
+      'contact.p':'Bug reports, feature ideas, partnership inquiries, privacy questions, or just saying hi — every message lands in the same inbox and gets a human reply. We aim to respond within 24–48 hours.',
+      'contact.cta1':'Send a message','contact.cta2':'Privacy Policy',
+      'contact.meta1':'Response · 24–48 h','contact.meta2':'Human replies only','contact.meta3':'MIT licensed',
+      'contact.addr-label':'Direct line',
+      'contact.addr-note1':'DevOpen · Dondurma RSS Reader',
+      'contact.addr-note2':'No trackers · No ads · Open source',
+      'foot.brand':'An RSS reader from Türkiye 🇹🇷, named after ice cream. Cold storage for warm news. Built with Flutter &amp; Material 3, licensed MIT, run by humans.',
+      'foot.col1':'Download','foot.col2':'Links',
+      'foot.dl-ios':'iOS · App Store','foot.dl-android':'Android · Google Play','foot.dl-other':'Other platforms · GitHub',
+      'foot.link-source':'Source · GitHub','foot.link-privacy':'Privacy Policy','foot.link-contact':'Contact us','foot.link-touch':'Get in touch',
+      'foot.base1':'NO ALGORITHM. NO TRACKER. NO COOKIES ON THIS PAGE EITHER.',
+    },
+    tr: {
+      'nav.features':'ÖZELLİKLER','nav.themes':'TEMALAR','nav.platforms':'PLATFORMLAR','nav.contact':'İLETİŞİM',
+      'hero.tag':'Sıcak haberler için soğuk depo',
+      'hero.eyebrow1':'Açık yayın',
+      'hero.eyebrow2':'Algoritma yok. İzleme yok. Gürültü yok.',
+      'hero.h1':'<span class="mint">Açık</span> web’e<br/>yeniden — <span class="stroke">bağlan.</span>',
+      'hero.sub':'<b>Dondurma</b>, özenle tasarılanmış bir RSS ve Atom okuyucusudur. Sahip olduğun her ekranda çalışır ve yalnızca sana yanıt verir. Besleme karıştırma yok. Etkileşim tuzakları yok. Sadece seçtiğin kanallar, yayınlandıkları sırayla.',
+      'hero.cta1':'v1.0’ı İndir','hero.cta2':'İçine bak',
+      'hero.stat':'6 PLATFORM · MIT LİSANS · 4.2 MB',
+      'manifesto.tag':'Çalışma prensibi',
+      'manifesto.p':'RSS yirmi altı yaşına girdi. Web onu korudu, her büyük platform onu zaman çizelgelerinin ve önerilerin altına gömmek istese de. Dondurma, unutmayı reddedenlerin okuyucusudur.',
+      'manifesto.refuse-label':'— REDDİYOİYORUZ','manifesto.keep-label':'+ KORUYORUZ',
+      'manifesto.refuse-text':'Algoritmik sıralama. Etkileşim metrikleri. İstemediğin bildirimler. Kılık değiştirmiş bülten spamı. Telemetri. Karanlık örüntüler. Satıcı kilidi.',
+      'manifesto.keep-text':'Kronolojik sıra. Tam metin çıkarma. Çevrimdışı önbelleği. OPML, verilerini, giriş ve çıkış. Açık kaynak. Yazarı ve okuyucuyu saygıyla karşılayan bir okuma deneyimi.',
+      'manifesto.h2':'Senin için <span class="strike">karar veren</span> değil.<br/>Senin kararını <span class="mint">bekleyen</span><br/>bir okuyucu.',
+      'manifest.tag':'Operatör manifestosu',
+      'manifest.tag-meta':'28 doğrulandı · 0 izin vermediğin bağımlılık',
+      'manifest.h3':'İhtiyacın olan her şey.<br/><span style="color:var(--mint)">Hiçbir şey</span> sızmıyor.',
+      'manifest.subtitle':'Manifestoyu kaydır →<br/>her satır bugün gelen gerçek bir özellik',
+      'manifest.col-name':'AD','manifest.col-desc':'AÇIKLAMA','manifest.col-tags':'ETİKETLER',
+      'f01.name':'Yayın yapan her şeye abone ol',
+      'f01.desc':'RSS 2.0 ve Atom hazır çıkar. Besleme URL’si ya da ana sayfa yapıştır — Dondurma kanalı senin için bulur. OPML içe ve dışa aktarma kütüphaneni sonsuza kadar taşınabilir tutar.',
+      'f01.more':'<div><h5>Otomatik keşif</h5><code>nytimes.com</code> yapıştır — <code>/feed.xml</code>’i senin için buluruz. Çoğu blog, haber sitesi, podcast, GitHub sürümünde çalışır.</div><div><h5>OPML</h5>Feedly, Inoreader, NetNewsWire, NewsBlur veya standart dışa aktaran her yerden içe aktar. Her zaman dışa aktar, her şeyle ayrıl.</div><div><h5>Kanal limiti</h5>Yok. Okuyucu cihaz başına <code>1.200+ besleme</code> ile yavaşlamadan test edildi.</div>',
+      'f02.name':'Kişiliği olan klasörler ve kategoriler',
+      'f02.desc':'Kanallarını özel emoji simgeleri olan klasörlere gruplandır. Besleme başına anahtar kelime filtreleri geçmek istemediğin konuları sessizce gizler — bağırmadan, sadece sessizlik.',
+      'f02.more':'<div><h5>İç içe gruplar</h5>Bir kat klasör, bilerek. İki kat bir UX tuzağıydı. Yeniden sıralamak için sürükle ve bırak.</div><div><h5>Anahtar kelime filtresi</h5>Başlığı <code>kripto</code>, <code>NFT</code>, <code>ünlü</code> içeren makaleleri engelle — senin kararın. Besleme başına veya global.</div><div><h5>Simgeler</h5>Yerel emoji seçici. Her işletim sisteminde aynı görünür — sonunda.</div>',
+      'f03.name':'Gerçek okuma için tasarılanmış bir okuma odası',
+      'f03.desc':'Görsel döngüleri ve hikayeler arası PageView kaydırmaları olan tam ekran makale görüntüleyici. Taahhüt etmeden önce tahmini okuma süresi. Ayrıldığında ilerleme kaydedilir.',
+      'f03.more':'<div><h5>Döngüler</h5>Çok görselli gönderiler yığılmış fotoğraf duvarı değil yatay kaydırma galerisi alır.</div><div><h5>Devam et</h5>Uygulamaı 14. paragrafta kapat, 14. paragrafa dön — kaydırma konumu makale başınadır ve cihaz yeniden başlatmalarından kurtulur.</div><div><h5>Okuma süresi</h5>Dakikada <code>238 kelime</code> tabanıyla kelime sayısından hesaplanır. Makaleye girmeden önce gösterilir.</div>',
+      'f04.name':'Özet beslemelerden bile tam metin çıkarma',
+      'f04.desc':'Yalnızca teaser yayınlayan siteler otomatik olarak açılır. Artık ücretli içerik sekmesine tıklama yok — tüm makale okuyucunun içinde açılır.',
+      'f04.more':'<div><h5>Motor</h5>Cihazda çalışan Readability tarzı DOM çıkarma. Hiçbir üçüncü taraf sunucu açtığın URL’yi görmez.</div><div><h5>Yedek</h5>Çıkarmayı engelleyen siteler sessizce uygulama içi tarayıcıya düşer. Besleme başına yapılandırılabilir.</div><div><h5>Önbelleği</h5>Çıkarılan gövdeler hızlı yeniden okuma ve çevrimdışı için yerel olarak önbelleğe alınır.</div>',
+      'f05.name':'On tema. FlexColorScheme destekli.',
+      'f05.desc':'Material, Blue, Indigo, Deep Purple, Sakura, Red, Teal, Green, Amber ve Outer Space — hepsi FlexColorScheme ile. Şema başına üç parlaklık modu (Sistem, Açık, Koyu). Boydan boya Outfit tipografisi.',
+      'f05.more':'<div><h5>Canlı önizleme</h5>Aşağı kaydır — bir tema kartına dokun. Şu an bulunduğun site uygulamayla eşleşecek şekilde yeniden kaplanır.</div><div><h5>Sistem senkronizasyonu</h5>Sistem teması iOS / Android / macOS görünümünü ve günün saatini otomatik takip eder.</div><div><h5>Parlaklık</h5>10 renk şemasının her biri Sistem, Açık ve Koyu modları destekler — toplamda 30 yapılandırma.</div>',
+      'f06.name':'Okuyucunun içinde bir tarayıcı',
+      'f06.desc':'Bir bağlantıya dokun, uygulamada kal. EasyList + AdGuard reklam engellemeli yerleşik WebView. Ya da sistem tarayıcına gönder — senin tercihim.',
+      'f06.more':'<div><h5>Filtre listeleri</h5>Her gezintide <code>EasyList</code> + <code>AdGuard Base</code> uygulandı. Oturum başına geçiş yap.</div><div><h5>Karanlık mod köprüsü</h5>Gece 2’de flaş bombasına tutulmamak için herhangi bir makaleye koyu stil sayfası zorla.</div><div><h5>Harici</h5>Yerleşik / harici Chrome / Safari / sistem varsayılanı — bir kez seç, istediğinde değiştir.</div>',
+      'f07.name':'Sessiz saatlere saygı gösteren bildirimler',
+      'f07.desc':'Gerçekten yeni bir şey geldiğinde titreşim. Özet modu küçük şeyleri toplar. Yapılandırılabilir sessiz pencere, okuyucunun sen uyurken uyumasını sağlar.',
+      'f07.more':'<div><h5>Özet</h5>N saatte bir, makale başına bir titreşim yerine paketlenmiş bir bildirim. N’ni sen belirle.</div><div><h5>Sessiz saatler</h5><code>22:00 → 08:00</code> gibi bir pencere seç. Bildirimler sessizce sıraya girer, uyandığında iletilir.</div><div><h5>Atlamak için dokun</h5>Bildirime dokun, doğrudan makaleye geç — liste gezinimi yok.</div>',
+      'f08.name':'Çevrimdışı önbelleği ve arka plan senkronizasyonu',
+      'f08.desc':'Makaleler metroda, uçakta, her yerde okunabilir kalır. Programına göre arka plan yenileme. Gerçek düzeni yansıtan görsel önbelleği ve iskelet parıltıları.',
+      'f08.more':'<div><h5>Program</h5><code>15d / 1s / 6s / manuel</code> seç. Arka plan işleri işletim sistemi pil kurallarına uyar.</div><div><h5>İskeletler</h5>Yükleme durumları tam kart düzenini yansıtır — gerçek veriler geldiğinde rahatsız edici düzen değişikliği yok.</div><div><h5>Sayfalandırma</h5>Tarih kovası: <em>Bugün</em> · <em>Dün</em> · <em>Daha Eski</em>. İsteğe bağlı daha fazla yükle.</div>',
+      'f09.name':'Kaydetmek için kaydır, paylaşmak için kaydır',
+      'f09.desc':'Sol kaydırma bir makaleyi sonraya kaydeder. Sağ kaydırma okundu durumunu değiştirir. Kalıcı arama geçmişi neredeyse unuttukllarını geri getirir.',
+      'f09.more':'<div><h5>Hareketler</h5>Sol → yer imi. Sağ → okundu/okunmadı geçiş. Uzun basış → sistem paylaşım sayfası.</div><div><h5>Arama</h5>Başlık + gövde tam metin. Son sorgular hatırlanır. Yeniden çalıştırmak için dokun.</div><div><h5>Yer imleri sekmesi</h5>Kaynağa veya tarihe göre sıralanabilen, kendi başına bir kanal.</div>',
+      'spot.tag':'Alıcı galerisi','spot.tag-meta':'on moddan üçü gösteriliyor',
+      'spot.h3':'Aynı sinyal,<br/><span style="color:var(--mint);font-style:italic">her ruh haline göre.</span>',
+      'spot.p':'Her tema kontrast, odak ve uzun okuma oturumları için elle dengelenmiştir. Anında geçiş yap. Aboneliklerinin farkı olmaz; gözlerinin olur.',
+      'spot.cap1a-full':'<span class="ch">CH·01</span> · KOYU KLASİK','spot.cap1b':'Gece Modu',
+      'spot.cap2a-full':'<span class="ch">CH·02</span> · AÇIK MOD','spot.cap2b':'Şafak',
+      'spot.cap3a-full':'<span class="ch">CH·03</span> · MOTOR ODASI','spot.cap3b':'Kokpit',
+      'themes.tag':'Frekans ön ayarları',
+      'themes.h3':'Havâyı okuymanın<br/><span class="mint">on yolu.</span>',
+      'themes.p':'Material, Blue, Indigo, Deep Purple, Sakura, Red, Teal, Green, Amber ve Outer Space — FlexColorScheme ile destekleniyor. Her tema tek bir dokunuyta tüm yüzeyi değiştirir. Şema başına üç parlaklık modu.',
+      'plat.tag':'Yayın yapıyor','plat.tag-meta':'tek kod tabanı · altı alıcı',
+      'plat.h3':'Bir kez yazıldı.<br/><span style="color:var(--mint);font-style:italic">Her yerde çalışır.</span>',
+      'plat.sub':'Flutter ve Material 3 ile destekleniyor.<br/>Aynı beslemeler, aynı yer imleri, aynı tema — nerede okursan oku.',
+      'bcast.h2':'<span class="strike-out">Feed</span>’ten uzaklaş.<br/><span class="mint">Feedlerine</span> adım at.',
+      'bcast.p':'Ücretsi. Açık kaynak. Çatallaman için seninki, verilerini saklamak için seninki. iOS ve Android’de mevcut — diğer platformlar için GitHub.',
+      'bcast.cta1':'iOS için İndir','bcast.cta2':'Android’e Geç','bcast.cta3':'Diğer platformlar · GitHub',
+      'contact.tag':'İletişime geç',
+      'contact.h2':'Her <span class="mint">mesajı</span><br/>okuruz.',
+      'contact.p':'Hata raporları, özellik fikirleri, ortaklık sorgulamaları, gizlilik soruları ya da sadece merhaba demek — her mesaj aynı gelen kutusuna düşer ve insan tarafından yanıtlanır. 24–48 saat içinde yanıt vermeyi hedefliyoruz.',
+      'contact.cta1':'Mesaj gönder','contact.cta2':'Gizlilik Politikası',
+      'contact.meta1':'Yanıt · 24–48 s','contact.meta2':'Yalnızca insan yanıtları','contact.meta3':'MIT lisanslı',
+      'contact.addr-label':'Direkt hat',
+      'contact.addr-note1':'DevOpen · Dondurma RSS Reader',
+      'contact.addr-note2':'İzleyici yok · Reklam yok · Açık kaynak',
+      'foot.brand':'Türkiye’den bir RSS okuyucusu 🇹🇷, dondurma olarak adlandırıldı. Sıcak haberler için soğuk depo. Flutter ve Material 3 ile üretildi, MIT lisanslı, insanlar tarafından işletiliyor.',
+      'foot.col1':'İndir','foot.col2':'Bağlantılar',
+      'foot.dl-ios':'iOS · App Store','foot.dl-android':'Android · Google Play','foot.dl-other':'Diğer platformlar · GitHub',
+      'foot.link-source':'Kaynak · GitHub','foot.link-privacy':'Gizlilik Politikası','foot.link-contact':'Bize ulaşın','foot.link-touch':'İletişime geç',
+      'foot.base1':'ALGORİTMA YOK. İZLEYİCİ YOK. BU SAYFADA DA ÇEREZ YOK.',
+    }
+  };
+
+  let _curLang = 'en';
+  function setLang(lang) {
+    const t = I18N[lang];
+    if (!t) return;
+    _curLang = lang;
+    document.documentElement.lang = lang;
+    document.querySelectorAll('[data-i18n]').forEach(el => {
+      const v = t[el.dataset.i18n];
+      if (v !== undefined) el.textContent = v;
+    });
+    document.querySelectorAll('[data-i18n-html]').forEach(el => {
+      const v = t[el.dataset.i18nHtml];
+      if (v !== undefined) el.innerHTML = v;
+    });
+    document.querySelectorAll('.lang-btn').forEach(b => {
+      b.classList.toggle('lang-active', b.dataset.lang === lang);
+    });
+    // update active theme label for current lang
+    window.__langActive = lang === 'tr' ? 'AKTİF' : 'ACTIVE';
+    document.querySelectorAll('.theme .check').forEach(c => {
+      if (c.textContent && c.textContent !== '○') {
+        c.textContent = '● ' + window.__langActive;
+      }
+    });
+    try { localStorage.setItem('dondurma:lang', lang); } catch(_) {}
+  }
+  window.__langActive = 'ACTIVE';
+  document.querySelectorAll('.lang-btn').forEach(b => {
+    b.addEventListener('click', () => setLang(b.dataset.lang));
+  });
+  try {
+    const sl = localStorage.getItem('dondurma:lang');
+    if (sl && I18N[sl] && sl !== 'en') setLang(sl);
+  } catch(_) {}
+
+  // ============ HAMBURGER MENU ============
+  const hamBtn = document.getElementById('hamBtn');
+  const mobMenu = document.getElementById('mobMenu');
+  function closeMobMenu(){
+    hamBtn.classList.remove('open');
+    mobMenu.classList.remove('open');
+    hamBtn.setAttribute('aria-expanded','false');
+    mobMenu.setAttribute('aria-hidden','true');
+  }
+  hamBtn?.addEventListener('click', e => {
+    e.stopPropagation();
+    const isOpen = mobMenu.classList.toggle('open');
+    hamBtn.classList.toggle('open', isOpen);
+    hamBtn.setAttribute('aria-expanded', String(isOpen));
+    mobMenu.setAttribute('aria-hidden', String(!isOpen));
+  });
+  // close on any mob-menu link click
+  mobMenu?.querySelectorAll('a').forEach(a => a.addEventListener('click', closeMobMenu));
+  // close on outside click
+  document.addEventListener('click', e => {
+    if(mobMenu?.classList.contains('open') && !mobMenu.contains(e.target) && e.target !== hamBtn){
+      closeMobMenu();
+    }
+  });
+  // close on escape
+  document.addEventListener('keydown', e => {
+    if(e.key === 'Escape') closeMobMenu();
   });
 
   // ============ LIVE CLOCK in top bar ============

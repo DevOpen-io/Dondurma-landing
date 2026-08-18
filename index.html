@@ -3,7 +3,77 @@
 <head>
 <meta charset="utf-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1" />
-<title>DONDURMA / Signal Reader v1.0</title>
+
+<!-- Primary SEO -->
+<title>Dondurma RSS Reader — Open Source RSS &amp; Atom Reader</title>
+<meta name="description" content="Dondurma is a free and open-source RSS and Atom feed reader for iOS, Android, Web and Desktop. Read offline, import and export OPML, extract full-text articles, and follow your feeds without algorithms or tracking." />
+<meta name="robots" content="index, follow, max-image-preview:large, max-snippet:-1, max-video-preview:-1" />
+<meta name="googlebot" content="index, follow, max-image-preview:large, max-snippet:-1, max-video-preview:-1" />
+<meta name="application-name" content="Dondurma RSS Reader" />
+<meta name="author" content="DevOpen" />
+<meta name="theme-color" content="#07090a" />
+<link rel="canonical" href="https://dondurma.devopen.io/" />
+<link rel="icon" href="assets/Logo.png" />
+<link rel="apple-touch-icon" href="assets/Logo.png" />
+
+<!-- App discovery -->
+<meta name="apple-itunes-app" content="app-id=6782334224" />
+
+<!-- Open Graph -->
+<meta property="og:type" content="website" />
+<meta property="og:site_name" content="Dondurma RSS Reader" />
+<meta property="og:title" content="Dondurma RSS Reader — Open Source RSS &amp; Atom Reader" />
+<meta property="og:description" content="A free and open-source RSS &amp; Atom reader with offline reading, full-text extraction, OPML support, and no tracking." />
+<meta property="og:url" content="https://dondurma.devopen.io/" />
+<meta property="og:image" content="https://dondurma.devopen.io/assets/Logo.png" />
+<meta property="og:image:alt" content="Dondurma RSS Reader logo" />
+<meta property="og:locale" content="en_US" />
+<meta property="og:locale:alternate" content="tr_TR" />
+
+<!-- X / Twitter -->
+<meta name="twitter:card" content="summary_large_image" />
+<meta name="twitter:title" content="Dondurma RSS Reader — Open Source RSS &amp; Atom Reader" />
+<meta name="twitter:description" content="A free and open-source RSS &amp; Atom reader. No algorithms. No tracking. Just your feeds." />
+<meta name="twitter:image" content="https://dondurma.devopen.io/assets/Logo.png" />
+<meta name="twitter:image:alt" content="Dondurma RSS Reader logo" />
+
+<!-- Structured data -->
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "SoftwareApplication",
+  "name": "Dondurma RSS Reader",
+  "alternateName": "Dondurma",
+  "applicationCategory": "NewsApplication",
+  "applicationSubCategory": "RSS Reader",
+  "operatingSystem": "Android, iOS, Web, Windows, macOS, Linux",
+  "description": "A free and open-source RSS and Atom feed reader with offline reading, full-text extraction, OPML import/export, background sync, notifications, and no tracking.",
+  "url": "https://dondurma.devopen.io/",
+  "image": "https://dondurma.devopen.io/assets/Logo.png",
+  "softwareVersion": "1.0",
+  "isAccessibleForFree": true,
+  "license": "https://opensource.org/licenses/MIT",
+  "sameAs": [
+    "https://github.com/DevOpen-io/dondurma-rss-reader",
+    "https://apps.apple.com/tr/app/dondurma-rss-reader/id6782334224?l=tr",
+    "https://play.google.com/store/apps/details?id=io.devopen.dondurma"
+  ],
+  "downloadUrl": [
+    "https://apps.apple.com/tr/app/dondurma-rss-reader/id6782334224?l=tr",
+    "https://play.google.com/store/apps/details?id=io.devopen.dondurma"
+  ],
+  "author": {
+    "@type": "Organization",
+    "name": "DevOpen",
+    "url": "https://github.com/DevOpen-io"
+  },
+  "offers": {
+    "@type": "Offer",
+    "price": "0",
+    "priceCurrency": "USD"
+  }
+}
+</script>
 <template id="__bundler_thumbnail" data-bg-color="#07090a">
   <svg viewBox="0 0 1200 800" xmlns="http://www.w3.org/2000/svg">
     <rect width="1200" height="800" fill="#07090a"/>
@@ -638,7 +708,7 @@
       <div>
         <div class="eyebrow mono uc">
           <span class="bar"></span>
-          <span data-i18n="hero.eyebrow1">Open broadcast</span>
+          <span data-i18n="hero.eyebrow1">Open-source RSS &amp; Atom reader</span>
           <span class="dim">·</span>
           <span class="dim" data-i18n="hero.eyebrow2">No algorithm. No tracker. No noise.</span>
         </div>
@@ -1546,7 +1616,7 @@
     en: {
       'nav.features':'FEATURES','nav.themes':'THEMES','nav.platforms':'PLATFORMS','nav.contact':'CONTACT',
       'hero.tag':'Cold storage for warm news',
-      'hero.eyebrow1':'Open broadcast',
+      'hero.eyebrow1':'Open-source RSS & Atom reader',
       'hero.eyebrow2':'No algorithm. No tracker. No noise.',
       'hero.h1':'Tune in to <span class="mint">the open</span><br/>web — <span class="stroke">again.</span>',
       'hero.sub':'<b>Dondurma</b> is a beautifully crafted RSS &amp; Atom reader. It runs on every screen you own and answers only to you. No feed shuffling. No engagement traps. Just the channels you chose, in the order they aired.',
@@ -1622,7 +1692,7 @@
     tr: {
       'nav.features':'ÖZELLİKLER','nav.themes':'TEMALAR','nav.platforms':'PLATFORMLAR','nav.contact':'İLETİŞİM',
       'hero.tag':'Sıcak haberler için soğuk depo',
-      'hero.eyebrow1':'Açık yayın',
+      'hero.eyebrow1':'Açık kaynak RSS & Atom okuyucu',
       'hero.eyebrow2':'Algoritma yok. İzleme yok. Gürültü yok.',
       'hero.h1':'<span class="mint">Açık</span> web’e<br/>yeniden — <span class="stroke">bağlan.</span>',
       'hero.sub':'<b>Dondurma</b>, özenle tasarılanmış bir RSS ve Atom okuyucusudur. Sahip olduğun her ekranda çalışır ve yalnızca sana yanıt verir. Besleme karıştırma yok. Etkileşim tuzakları yok. Sadece seçtiğin kanallar, yayınlandıkları sırayla.',
@@ -1703,6 +1773,26 @@
     if (!t) return;
     _curLang = lang;
     document.documentElement.lang = lang;
+
+    // Keep browser/search/social metadata aligned with the selected language.
+    const seo = lang === 'tr' ? {
+      title: 'Dondurma RSS Reader — Açık Kaynak RSS & Atom Okuyucu',
+      description: 'Dondurma; iOS, Android, Web ve masaüstü için ücretsiz ve açık kaynak bir RSS/Atom okuyucusudur. Çevrimdışı okuyun, OPML içe/dışa aktarın ve algoritma ya da takip olmadan akışlarınızı takip edin.',
+      ogDescription: 'Çevrimdışı okuma, tam metin çıkarma, OPML desteği ve takip olmadan çalışan ücretsiz, açık kaynak RSS & Atom okuyucu.',
+      locale: 'tr_TR'
+    } : {
+      title: 'Dondurma RSS Reader — Open Source RSS & Atom Reader',
+      description: 'Dondurma is a free and open-source RSS and Atom feed reader for iOS, Android, Web and Desktop. Read offline, import and export OPML, extract full-text articles, and follow your feeds without algorithms or tracking.',
+      ogDescription: 'A free and open-source RSS & Atom reader with offline reading, full-text extraction, OPML support, and no tracking.',
+      locale: 'en_US'
+    };
+    document.title = seo.title;
+    document.querySelector('meta[name="description"]')?.setAttribute('content', seo.description);
+    document.querySelector('meta[property="og:title"]')?.setAttribute('content', seo.title);
+    document.querySelector('meta[property="og:description"]')?.setAttribute('content', seo.ogDescription);
+    document.querySelector('meta[property="og:locale"]')?.setAttribute('content', seo.locale);
+    document.querySelector('meta[name="twitter:title"]')?.setAttribute('content', seo.title);
+    document.querySelector('meta[name="twitter:description"]')?.setAttribute('content', seo.ogDescription);
     document.querySelectorAll('[data-i18n]').forEach(el => {
       const v = t[el.dataset.i18n];
       if (v !== undefined) el.textContent = v;
